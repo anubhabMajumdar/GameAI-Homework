@@ -16,12 +16,12 @@ public class CustomShape {
     float orientation;
     ArrayList arrayList;
 
-    CustomShape(PApplet p, String imageName)
+    CustomShape(PApplet p, String imageName, float w, float h)
     {
         pApplet = p;
         pImage = pApplet.loadImage(imageName);
-        width = 60;
-        height = 40;
+        width = w;
+        height = h;
         orientation = 0;
         arrayList = new ArrayList();
     }
@@ -33,10 +33,10 @@ public class CustomShape {
 
     public void drawCustomShape(float x, float y)
     {
-        drawCircleAroundShape(x, y);
+        //drawCircleAroundShape(x, y);
 
         pApplet.pushMatrix();
-        pApplet.translate(x+width/2,y+height/2);
+        pApplet.translate(x,y);
         pApplet.rotate(orientation);
         pApplet.image(pImage, -width/2, -height/2, width, height);
         pApplet.popMatrix();
@@ -48,7 +48,7 @@ public class CustomShape {
         for (int i=0; i<arrayList.size(); i++)
         {
             pApplet.pushMatrix();
-            pApplet.translate(x+width/2,y+height/2);
+            pApplet.translate(x,y);
             pApplet.rotate((float)arrayList.get(i));
             pApplet.ellipse(2*width/3, 2*height/3, 3, 3);
             pApplet.popMatrix();
@@ -58,6 +58,11 @@ public class CustomShape {
     public void getBB()
     {
 
+    }
+
+    public PVector getVectorFromOrientation()
+    {
+        return (new PVector(pApplet.sin(orientation),  pApplet.cos(orientation)));
     }
 
 }
