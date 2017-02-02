@@ -21,7 +21,7 @@ public class DriverProgram extends PApplet {
         w = 30;
         h = 40;
         movementAlgorithms = new MovementAlgorithms(this);
-        target = new PVector(0,0);
+        target = new PVector(100,100);
         targetOrientation = radians(0);
 
         shape = new CustomShape(this, "customShape.png", w, h);
@@ -40,15 +40,16 @@ public class DriverProgram extends PApplet {
         if (mousePressed)
         {
             target = new PVector(mouseX,mouseY);
-            targetOrientation = getOrientationFromVector(target.sub(s.getPosition()));
-            println(degrees(getOrientationFromVector(target)));
+            targetOrientation = getOrientationFromVector(PVector.sub(target, s.getPosition()));
+            //println(degrees(getOrientationFromVector(target)));
         }
         movementAlgorithms.align(s, targetOrientation);
+        movementAlgorithms.arrive(s, target);
         //println(degrees(s.getOrientation()));
         shape.setOrientation(s.getOrientation());
         shape.drawCustomShape(s.getPosition().x,s.getPosition().y);
-        //fill(255);
-        //ellipse(s.getPosition().x, s.getPosition().y, 10, 10);
+        fill(255);
+        ellipse(target.x, target.y, 10, 10);
         //line(s.getPosition().x, s.getPosition().y, mouseX, mouseY);
 
         //shape.drawBreadcrumbs();

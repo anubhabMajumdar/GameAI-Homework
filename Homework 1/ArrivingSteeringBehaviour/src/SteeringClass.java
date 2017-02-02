@@ -14,7 +14,8 @@ public class SteeringClass {
     private PVector acceleration;
     private float angular_acc;
 
-    float maxRot, maxVel;
+    float maxRot;
+    PVector maxVel;
 
     SteeringClass(PApplet p)
     {
@@ -27,6 +28,7 @@ public class SteeringClass {
         angular_acc = 0;
 
         maxRot = 0.1f;
+        maxVel = new PVector(5,5);
     }
 
     public void setPosition(PVector pos)

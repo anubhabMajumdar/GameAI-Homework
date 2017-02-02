@@ -8,17 +8,51 @@ import processing.core.PVector;
 public class MovementAlgorithms {
 
     PApplet pApplet;
-    float align_ROS, align_ROD, align_timeToTargetAcc;
+    float align_ROS, align_ROD, align_timeToTargetAcc, arrive_ROS, arrive_ROD, arrive_timeToTargetAcc;
 
     MovementAlgorithms(PApplet p)
     {
         pApplet = p;
 
-        align_ROS = pApplet.radians(1);
-        align_ROD = pApplet.radians(10);
+        align_ROS = pApplet.radians(3);
+        align_ROD = pApplet.radians(20);
         align_timeToTargetAcc = 10;
 
+        arrive_ROS = 3;
+        arrive_ROD = 30;
+        arrive_timeToTargetAcc = 10;
+
     }
+
+    public void arrive(SteeringClass character, PVector targetPos)
+    {
+        PVector deltaPos = PVector.sub(targetPos, character.getPosition());
+        PVector goalSpeed = new PVector(0,0);
+
+        if (deltaPos.mag() < arrive_ROS)
+        {
+            //PApplet.println("ROS");
+            character.setVelocity(new PVector(0,0));
+            character.setAcceleration(new PVector(0,0));
+            return;
+        }
+        else if(deltaPos.mag()>arrive_ROD)
+        {
+            //PApplet.println("outside ROD");
+            goalSpeed = character.maxVel;
+        }
+        else
+        {
+            //PApplet.println("inside ROD");
+            goalSpeed = convolution(character.maxVel, new PVector(deltaPos.mag()/arrive_ROD, deltaPos.mag()/arrive_ROD));
+        }
+
+        PVector goalVel = convolution(goalSpeed, deltaPos.normalize());
+        character.setAcceleration(goalVel.sub(character.getVelocity()).div(arrive_timeToTargetAcc));
+    }
+
+
+
 
     public void align(SteeringClass character, float targetOrientation)
     {
@@ -65,5 +99,10 @@ public class MovementAlgorithms {
             else
                 return (deltaOrientation+2*pApplet.PI);
         }
+    }
+
+    public PVector convolution(PVector a, PVector b)
+    {
+        return (new PVector(a.x * b.x, a.y * b.y));
     }
 }
