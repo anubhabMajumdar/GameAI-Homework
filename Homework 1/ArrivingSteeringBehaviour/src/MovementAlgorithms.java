@@ -31,19 +31,16 @@ public class MovementAlgorithms {
 
         if (deltaPos.mag() < arrive_ROS)
         {
-            //PApplet.println("ROS");
             character.setVelocity(new PVector(0,0));
             character.setAcceleration(new PVector(0,0));
             return;
         }
         else if(deltaPos.mag()>arrive_ROD)
         {
-            //PApplet.println("outside ROD");
             goalSpeed = character.maxVel;
         }
         else
         {
-            //PApplet.println("inside ROD");
             goalSpeed = convolution(character.maxVel, new PVector(deltaPos.mag()/arrive_ROD, deltaPos.mag()/arrive_ROD));
         }
 
@@ -57,14 +54,11 @@ public class MovementAlgorithms {
     public void align(SteeringClass character, float targetOrientation)
     {
         float deltaOrientation = mapToRange(targetOrientation - character.getOrientation());
-        //pApplet.println(deltaOrientation);
         float rotSize = Math.abs(deltaOrientation);
         float goalRot;
 
         if (rotSize<align_ROS)
         {
-            //goalRot = 0;
-            //pApplet.println("in ROS");
             character.setAngularAcc(0);
             character.setRotation(0);
             return;
@@ -72,12 +66,10 @@ public class MovementAlgorithms {
         else if (rotSize>align_ROD)
         {
             goalRot = character.maxRot;
-            //pApplet.println("outside ROD");
         }
         else
         {
             goalRot = character.maxRot * (rotSize/align_ROD);
-            //pApplet.println("in ROD");
         }
 
         if (Math.abs(deltaOrientation)>0)

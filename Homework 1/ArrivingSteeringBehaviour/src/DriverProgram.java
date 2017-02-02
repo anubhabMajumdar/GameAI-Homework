@@ -28,10 +28,7 @@ public class DriverProgram extends PApplet {
         s = new SteeringClass(this);
 
         s.setPosition(new PVector(100,100));
-        //s.setVelocity(new PVector(3.2f,0.0f));
-        //s.setAcceleration(new PVector(0.02f,0.03f));
         s.setOrientation(radians(0));
-        //s.setRotation(-0.01f);
     }
 
     public void draw()
@@ -41,18 +38,13 @@ public class DriverProgram extends PApplet {
         {
             target = new PVector(mouseX,mouseY);
             targetOrientation = getOrientationFromVector(PVector.sub(target, s.getPosition()));
-            //println(degrees(getOrientationFromVector(target)));
         }
         movementAlgorithms.align(s, targetOrientation);
         movementAlgorithms.arrive(s, target);
-        //println(degrees(s.getOrientation()));
         shape.setOrientation(s.getOrientation());
         shape.drawCustomShape(s.getPosition().x,s.getPosition().y);
-        fill(255);
-        ellipse(target.x, target.y, 10, 10);
-        //line(s.getPosition().x, s.getPosition().y, mouseX, mouseY);
 
-        //shape.drawBreadcrumbs();
+        shape.drawBreadcrumbs();
 
         s.update(1);
 
