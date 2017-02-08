@@ -42,7 +42,7 @@ public class DriverProgram extends PApplet {
     {
         background(255);
 
-        if (millis()>startTime+500)
+        if (millis()>startTime+300)
         {
             startTime = millis();
             target = wander.wanderAlgo(s);
@@ -52,7 +52,7 @@ public class DriverProgram extends PApplet {
         movementAlgorithms.arrive(s, target);
 //        movementAlgorithms.seek(s, target);
 
-        line(s.getPosition().x, s.getPosition().y, target.x, target.y);
+//        line(s.getPosition().x, s.getPosition().y, target.x, target.y);
 
         shape.setOrientation(s.getOrientation());
         shape.drawCustomShape(s.getPosition().x,s.getPosition().y);

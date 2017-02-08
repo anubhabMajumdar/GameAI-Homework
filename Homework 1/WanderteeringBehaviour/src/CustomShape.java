@@ -68,7 +68,7 @@ public class CustomShape {
         //System.out.println(breadCrumbs.size());
         for (int i=0; i<breadCrumbs.size(); i++)
         {
-            if (i%10==0)
+            if (i%20==0)
             {
                 pApplet.fill(pApplet.random(0,255));
                 pApplet.ellipse(breadCrumbs.get(i).x, breadCrumbs.get(i).y, 10, 10);
