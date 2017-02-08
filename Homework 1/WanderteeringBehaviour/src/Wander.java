@@ -14,9 +14,9 @@ public class Wander {
     {
         pApplet = p;
 
-        wanderOffset = 100;
-        wanderRadius = 100;
-        wanderRate = pApplet.PI;
+        wanderOffset = 20;
+        wanderRadius = 50;
+        wanderRate = pApplet.PI/3;
 
         movementAlgorithms = new MovementAlgorithms(pApplet);
     }
@@ -24,22 +24,17 @@ public class Wander {
 
     public PVector wanderAlgo(SteeringClass character)
     {
-//        pApplet.println("wanderAlgo");
+        float randomNumber = pApplet.random(-1,1);
+//        pApplet.println(randomNumber);
+//        if (pApplet.random(0,1)>0.7)
+//            randomNumber = randomNumber * -1;
 
-        wanderOrientation = wanderOrientation + (pApplet.random(-1,1) * wanderRate);
+        wanderOrientation = wanderOrientation + randomNumber * wanderRate;
         float targetOrientation = character.getOrientation() + wanderOrientation;
 
         PVector target = PVector.add(character.getPosition(), character.getVectorFromOrientation().mult(wanderOffset));
         target.add(getVectorFromOrientation(targetOrientation).mult(wanderRadius));
 
-//        pApplet.println(getOrientationFromVector(target));
-//        pApplet.println(character.getOrientation());
-//        pApplet.println(target.mag());
-
-//        movementAlgorithms.align(character, getOrientationFromVector(PVector.sub(target, character.getPosition())));
-//        movementAlgorithms.arrive(character, target);
-
-//        movementAlgorithms.seek(character, target);
 
         return target;
     }
