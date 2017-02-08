@@ -14,14 +14,23 @@ public class MovementAlgorithms {
     {
         pApplet = p;
 
-        align_ROS = pApplet.radians(3);
+        align_ROS = pApplet.radians(1);
         align_ROD = pApplet.radians(20);
         align_timeToTargetAcc = 10;
 
-        arrive_ROS = 3;
-        arrive_ROD = 30;
+        arrive_ROS = 10;
+        arrive_ROD = 50;
         arrive_timeToTargetAcc = 10;
 
+
+
+    }
+
+    public void seek(SteeringClass character, PVector targetPos)
+    {
+        PVector deltaPos = PVector.sub(targetPos, character.getPosition());
+
+        character.setAcceleration(deltaPos.normalize().mult(character.maxAcc));
     }
 
     public void arrive(SteeringClass character, PVector targetPos)
@@ -31,12 +40,14 @@ public class MovementAlgorithms {
 
         if (deltaPos.mag() < arrive_ROS)
         {
+
             character.setVelocity(new PVector(0,0));
             character.setAcceleration(new PVector(0,0));
             return;
         }
         else if(deltaPos.mag()>arrive_ROD)
         {
+
             goalSpeed = character.maxVel;
         }
         else
@@ -49,26 +60,29 @@ public class MovementAlgorithms {
     }
 
 
-
-
     public void align(SteeringClass character, float targetOrientation)
     {
         float deltaOrientation = mapToRange(targetOrientation - character.getOrientation());
         float rotSize = Math.abs(deltaOrientation);
         float goalRot;
 
+        //pApplet.println(PApplet.degrees(deltaOrientation));
+
         if (rotSize<align_ROS)
         {
+//            pApplet.println("in ros");
             character.setAngularAcc(0);
             character.setRotation(0);
             return;
         }
         else if (rotSize>align_ROD)
         {
+//            pApplet.println("outside rod");
             goalRot = character.maxRot;
         }
         else
         {
+//            pApplet.println("between rod and ros");
             goalRot = character.maxRot * (rotSize/align_ROD);
         }
 
@@ -78,6 +92,8 @@ public class MovementAlgorithms {
         character.setAngularAcc((goalRot-character.getRotation())/align_timeToTargetAcc);
 
     }
+
+
 
 
     public float mapToRange(float deltaOrientation)
@@ -97,5 +113,15 @@ public class MovementAlgorithms {
     public PVector convolution(PVector a, PVector b)
     {
         return (new PVector(a.x * b.x, a.y * b.y));
+    }
+
+    public PVector getVectorFromOrientation(float orientation)
+    {
+        return (new PVector(pApplet.sin(orientation),  pApplet.cos(orientation)));
+    }
+
+    public float getOrientationFromVector(PVector velocity)
+    {
+        return pApplet.atan2(-1 * velocity.x , velocity.y);
     }
 }
