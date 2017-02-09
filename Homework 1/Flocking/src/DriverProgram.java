@@ -25,7 +25,7 @@ public class DriverProgram extends PApplet {
         w = 30;
         h = 40;
 
-        flock = new Flock(this, 50, 10, 20, width, height);
+        flock = new Flock(this, 100, 10, 20, width, height);
         boid = new Boid(this, flock);
 
         boidFlag = false;
@@ -38,6 +38,7 @@ public class DriverProgram extends PApplet {
         if (mousePressed)
         {
             boidFlag = !boidFlag;
+            println(boidFlag);
         }
         if (boidFlag)
         {

@@ -33,8 +33,11 @@ public class Flock {
             steeringObjects.get(i).setPosition(new PVector(pApplet.random(20, frame_w),
                                                             pApplet.random(20, frame_h)));
             steeringObjects.get(i).setOrientation(pApplet.random(-pApplet.PI, pApplet.PI));
-            steeringObjects.get(i).setAcceleration(new PVector(pApplet.random(0, 0.2f), pApplet.random(0, 0.2f)));
-//            pApplet.println(pApplet.degrees(steeringObjects.get(i).getOrientation()));
+            steeringObjects.get(i).setAcceleration(new PVector(pApplet.random(-0.5f, 0.05f),
+                                                    pApplet.random(-0.05f, 0.05f)));
+            steeringObjects.get(i).setVelocity(new PVector(pApplet.random(-1, 1), pApplet.random(-1, 1)));
+
+            //            pApplet.println(pApplet.degrees(steeringObjects.get(i).getOrientation()));
         }
     }
 
