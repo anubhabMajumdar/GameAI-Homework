@@ -58,6 +58,11 @@ public class CustomShape {
         }
     }
 
+    public float getRadius()
+    {
+        return (float)((Math.sqrt(Math.pow(width,2) + Math.pow(height,2)))/2);
+    }
+
     public PVector getVectorFromOrientation()
     {
         return (new PVector(pApplet.sin(orientation),  pApplet.cos(orientation)));

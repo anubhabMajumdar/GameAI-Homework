@@ -1,6 +1,8 @@
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import java.util.ArrayList;
+
 /**
  * Created by anubhabmajumdar on 2/1/17.
  */
@@ -93,6 +95,46 @@ public class MovementAlgorithms {
 
     }
 
+
+    public void collisionAvoidance(SteeringClass character, SteeringClass target, float charRad, float targetRad)
+    {
+        PVector dp = PVector.sub(character.getPosition(), target.getPosition());
+        PVector dv = PVector.sub(character.getVelocity(), target.getVelocity());
+
+        float t = 0;
+
+        if (dv.mag()>0)
+        {
+            t = -1*PVector.dot(dp, dv)/(dv.magSq());
+        }
+
+
+        boolean colisionFlag = isCollision(character, target, charRad, targetRad, t);
+
+        PVector relativePos;
+
+        if (t>0 && colisionFlag)
+        {
+            relativePos = PVector.add(dp, PVector.mult(dv, t)).normalize();
+            character.setAcceleration(PVector.mult(relativePos, character.maxAcc));
+        }
+        else if (t==0 && colisionFlag)
+        {
+            relativePos = PVector.sub(target.getPosition(), character.getPosition()).normalize();
+            character.setAcceleration(PVector.mult(relativePos, character.maxAcc));
+        }
+    }
+
+    public boolean isCollision(SteeringClass character, SteeringClass target, float charRad, float targetRad, float t)
+    {
+        PVector pc = PVector.add(character.getPosition(), PVector.mult(character.getVelocity(), t));
+        PVector pt = PVector.add(target.getPosition(), PVector.mult(target.getVelocity(), t));
+
+        PVector dp_ = PVector.sub(pc, pt);
+
+        return  (dp_.mag()<=(charRad+targetRad));
+
+    }
 
 
 

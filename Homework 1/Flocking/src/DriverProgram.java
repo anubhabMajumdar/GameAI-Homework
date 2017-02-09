@@ -14,23 +14,35 @@ public class DriverProgram extends PApplet {
     float targetOrientation;
     int startTime;
     MovementAlgorithms movementAlgorithms;
+    Boid boid;
+    boolean boidFlag;
 
     public void settings(){
-        size(800,500);
+        size(600,400);
     }
 
     public void setup(){
         w = 30;
         h = 40;
 
-        flock = new Flock(this, 20, 10, 20);
+        flock = new Flock(this, 50, 10, 20, width, height);
+        boid = new Boid(this, flock);
 
+        boidFlag = false;
     }
 
     public void draw()
     {
         background(255);
 
+        if (mousePressed)
+        {
+            boidFlag = !boidFlag;
+        }
+        if (boidFlag)
+        {
+            boid.boidAlgo();
+        }
         flock.drawFlock();
 
     }
