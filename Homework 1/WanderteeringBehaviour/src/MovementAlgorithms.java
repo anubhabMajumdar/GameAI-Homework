@@ -14,12 +14,12 @@ public class MovementAlgorithms {
     {
         pApplet = p;
 
-        align_ROS = pApplet.radians(1);
+        align_ROS = pApplet.radians(3);
         align_ROD = pApplet.radians(20);
         align_timeToTargetAcc = 10;
 
-        arrive_ROS = 10;
-        arrive_ROD = 50;
+        arrive_ROS = 5;
+        arrive_ROD = 30;
         arrive_timeToTargetAcc = 10;
 
 

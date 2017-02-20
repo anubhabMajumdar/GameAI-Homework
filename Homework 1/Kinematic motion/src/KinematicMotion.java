@@ -11,6 +11,7 @@ public class KinematicMotion extends PApplet {
     SteeringClass s;
     float w, h;
     ArrayList<PVector> breadCrumbs;
+    Boolean firstTime;
 
     public void settings(){
         size(600,400);
@@ -20,11 +21,13 @@ public class KinematicMotion extends PApplet {
         w = 40;
         h = 30;
         breadCrumbs = new ArrayList<PVector>();
+        firstTime = true;
 
         shape = new CustomShape(this, "customShape.png", w, h);
         s = new SteeringClass(this);
 
-        s.setPosition(new PVector(2*w/3,height-2*h/2));
+        s.setPosition(new PVector((2*w/3)+30,height-2*h/2));
+//        s.setPosition(new PVector(100,100));
         s.setVelocity(new PVector(3.2f,0.0f));
         //s.setAcceleration(new PVector(0.02f,0.03f));
         s.setOrientation(radians(0));
@@ -39,9 +42,12 @@ public class KinematicMotion extends PApplet {
         shape.setOrientation(s.getOrientation());
         shape.drawCustomShape(s.getPosition().x,s.getPosition().y);
         drawBreadcrumbs();
-
+//        float radius = (float) (Math.sqrt(Math.pow(w,2) + Math.pow(h,2)));
+//        noFill();
+//        ellipse(s.getPosition().x,s.getPosition().y, radius, radius );
         specialHandleCollision();
 
+        checkStop();
         s.update(1);
 
     }
@@ -51,6 +57,20 @@ public class KinematicMotion extends PApplet {
         PApplet.main("KinematicMotion");
     }
 
+    public void checkStop()
+    {
+        float start = 2*w/3;
+        float end = height-2*h/2;
+
+        float x = s.getPosition().x;
+        float y = s.getPosition().y;
+
+        float radius = (float) (Math.sqrt(Math.pow(w,2) + Math.pow(h,2)))/4;
+
+        if ((Math.abs(x-start) <= radius) && (Math.abs(y-end) <= radius))
+            s.setVelocity(new PVector(0,0));
+
+    }
 
     public void specialHandleCollision()
     {
@@ -75,7 +95,7 @@ public class KinematicMotion extends PApplet {
 
     public void handleCollision()
     {
-        float radius = (float) (Math.sqrt(Math.pow(w,2) + Math.pow(h,2)))/2;
+        float radius = (float) (Math.sqrt(Math.pow(w,2) + Math.pow(h,2)));
 
         float x = s.getPosition().x;
         float y = s.getPosition().y;

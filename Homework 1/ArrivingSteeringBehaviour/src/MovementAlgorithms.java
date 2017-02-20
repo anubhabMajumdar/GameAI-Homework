@@ -18,8 +18,8 @@ public class MovementAlgorithms {
         align_ROD = pApplet.radians(20);
         align_timeToTargetAcc = 10;
 
-        arrive_ROS = 3;
-        arrive_ROD = 30;
+        arrive_ROS = 10;
+        arrive_ROD = 400;
         arrive_timeToTargetAcc = 10;
 
     }
@@ -41,11 +41,14 @@ public class MovementAlgorithms {
         }
         else
         {
+//            goalSpeed = character.maxVel;
             goalSpeed = convolution(character.maxVel, new PVector(deltaPos.mag()/arrive_ROD, deltaPos.mag()/arrive_ROD));
         }
 
         PVector goalVel = convolution(goalSpeed, deltaPos.normalize());
         character.setAcceleration(goalVel.sub(character.getVelocity()).div(arrive_timeToTargetAcc));
+
+        drawCircles(targetPos);
     }
 
 
@@ -98,4 +101,16 @@ public class MovementAlgorithms {
     {
         return (new PVector(a.x * b.x, a.y * b.y));
     }
+
+    public void drawCircles(PVector target)
+    {
+//        pApplet.fill(155);
+        pApplet.noFill();
+        pApplet.ellipse(target.x, target.y, 2*arrive_ROD, 2*arrive_ROD);
+//        pApplet.fill(0);
+        pApplet.noFill();
+        pApplet.ellipse(target.x, target.y, 2*arrive_ROS, 2*arrive_ROS);
+
+    }
+
 }

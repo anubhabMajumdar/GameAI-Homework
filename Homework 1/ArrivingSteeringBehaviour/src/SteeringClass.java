@@ -28,7 +28,7 @@ public class SteeringClass {
         angular_acc = 0;
 
         maxRot = 0.1f;
-        maxVel = new PVector(5,5);
+        maxVel = new PVector(10,10);
     }
 
     public void setPosition(PVector pos)

@@ -18,7 +18,7 @@ public class DriverProgram extends PApplet {
     boolean boidFlag;
 
     public void settings(){
-        size(600,400);
+        size(1200,800);
     }
 
     public void setup(){

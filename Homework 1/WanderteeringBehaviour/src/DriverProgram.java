@@ -28,7 +28,7 @@ public class DriverProgram extends PApplet {
         shape = new CustomShape(this, "customShape.png", w, h);
         s = new SteeringClass(this);
 
-        s.setPosition(new PVector(300,200));
+        s.setPosition(new PVector(600,400));
         s.setOrientation(radians(0));
         //s.setAcceleration(new PVector(0.2f, 0.1f));
 
