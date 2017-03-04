@@ -1,5 +1,7 @@
 # CSC 584 : Homework 1
 
+Use eclipse or Intellij to run the programs. Processing library has been added to all the folders.
+
 The Homework 1 folder contains 4 sub-folders:
 
 1. Kinematic motion - This contains code for basic-motion. Please run the KinematicMotion.java file to see output.
