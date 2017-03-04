@@ -11,6 +11,12 @@ import java.util.*;
 public class Graph {
 
     HashMap g = new HashMap();
+    PApplet pApplet;
+
+    public Graph(PApplet p)
+    {
+        pApplet = p;
+    }
 
     public StringBuffer readFile(String fileName)
     {
@@ -48,11 +54,18 @@ public class Graph {
             String cur = edges[i];
             String vals[] = cur.split("\\t");
 
-            if (vals.length == 3)
+
+            int fromNode = Integer.parseInt(vals[0]);
+            int toNode = Integer.parseInt(vals[1]);
+            float weight;
+
+            if (vals.length == 3) {
+                weight = Float.parseFloat(vals[2]);
+            }
+            else
             {
-                int fromNode = Integer.parseInt(vals[0]);
-                int toNode = Integer.parseInt(vals[1]);
-                float weight = Float.parseFloat(vals[2]);
+                weight = pApplet.random(1,100);
+            }
 
                 ArrayList<Edge> outEdges;
 
@@ -67,7 +80,6 @@ public class Graph {
                     outEdges.add(new Edge(fromNode, toNode, weight));
                     g.put(fromNode, outEdges);
 
-            }
         }
         System.out.println("Number of vertices = " + g.keySet().size());
         System.out.println("Number of edges = " + (edges.length-1));
@@ -102,17 +114,6 @@ public class Graph {
         }
         System.out.println();
 
-    }
-
-    public void drawGraph()
-    {
-
-    }
-
-    public static void main(String[] args)
-    {
-        Graph newG = new Graph();
-        newG.makeGraph("world_graph");
     }
 
 
