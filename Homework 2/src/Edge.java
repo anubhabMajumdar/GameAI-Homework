@@ -22,6 +22,6 @@ public class Edge {
 
     public void prettyPrint()
     {
-        System.out.print("(" + toNode + ", " + weight + ")");
+        System.out.print("(" + fromNode + ", " + toNode + ", " + weight + ")");
     }
 }
