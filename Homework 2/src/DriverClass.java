@@ -17,7 +17,7 @@ public class DriverClass extends PApplet {
     int start, stop;
     Graph newG;
     PathFinding pathFinding;
-    Textfield cost, fill;
+    Textarea cost, fill, path;
 
     public void settings(){
         size(1000,800);
@@ -81,9 +81,36 @@ public class DriverClass extends PApplet {
 
 //        myTextfield = controlP5.addTextfield("Number of nodes expanded",100,160,200,20);
 //        myTextfield.setFocus(true);
-        cost = controlP5.addTextfield("Total cost",250,350,200,20);
-        fill = controlP5.addTextfield("Number of nodes expanded",250,400,200,20);
+//        cost = controlP5.addTextfield("Total cost",250,350,200,20);
+//        fill = controlP5.addTextfield("Number of nodes expanded",250,400,200,20);
 
+        cost = controlP5.addTextarea("Total cost" ).setPosition(250, 350).setSize(200, 20)
+                .setFont(createFont("arial",12))
+                .setLineHeight(14)
+                .setColor(color(128))
+                .setColorBackground(color(255,100))
+                .setColorForeground(color(255,100))
+                .setText("Cost")
+        ;
+        fill = controlP5.addTextarea("Number of nodes expanded" ).setPosition(250, 400).setSize(200, 20)
+                .setFont(createFont("arial",12))
+                .setLineHeight(14)
+                .setColor(color(128))
+                .setColorBackground(color(255,100))
+                .setColorForeground(color(255,100))
+                .setText("Number of nodes expanded")
+        ;
+        path = controlP5.addTextarea("Path" ).setPosition(250, 450).setSize(700, 300)
+                .setFont(createFont("arial",12))
+                .setLineHeight(14)
+                .setColor(color(128))
+                .setColorBackground(color(255,100))
+                .setColorForeground(color(255,100))
+                .setText("Path")
+        ;
+
+//        controlP5.addConsole(cost);
+//        controlP5.addConsole(fill);
 
         //newG = new Graph(this);
 //        newG.makeGraph("world_graph.txt");
@@ -111,15 +138,35 @@ public class DriverClass extends PApplet {
 //            println(", value : "+theEvent.getController().getValue());
 
             if(theEvent.getController().getName().equals("Go")) {
-                if (newG!=null)
-                {
+
+                ArrayList<Edge> edges = new ArrayList<Edge>();
+
+                if (newG!=null) {
                     if (algo.equals("Dijkstra"))
-                        pathFinding.dijkstra(newG.g, start, stop);
+                        edges = pathFinding.dijkstra(newG.g, start, stop);
                     else if (algo.equals("A*"))
                         System.out.println("A*");//pathFinding.dijkstra(newG.g, start, stop);
-                }
 
-                cost.setValue()
+
+                    cost.setText(Float.toString(pathFinding.cost));
+                    fill.setText(Integer.toString(pathFinding.fill));
+
+                    if (edges != null)
+                    {
+                        String str = "Path represented as list of edges. Format of edge is (fromNode, toNode, weight) " +
+                                "\n Path --> ";
+                        for (int j=0; j<edges.size(); j++)
+                        {
+                            //edges.get(j).prettyPrint();
+//                            System.out.print("  ");
+                            str = str + "(" + edges.get(j).fromNode + ", " + edges.get(j).toNode + ", " + edges.get(j).weight + ")  ";
+                        }
+                        path.setText(str);
+                    }
+                    else
+                        path.setText("No Path exists");
+
+                }
 
 
             }

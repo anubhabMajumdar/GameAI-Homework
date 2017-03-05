@@ -10,7 +10,8 @@ import java.util.*;
 public class PathFinding {
 
     PApplet pApplet;
-
+    float cost;
+    int fill;
     public static Comparator<node> idComparator = new Comparator<node>(){
 
         @Override
@@ -104,18 +105,21 @@ public class PathFinding {
         }
 
 
-        if ((curNode == null) || (curNode.getEdges().get(curNode.getEdges().size()-1)).toNode!=target)
+        if ((curNode == null) || (curNode.getNodeName()!=target))
         {
             //printStat(visitedNodes.keySet().size(), -1);
+            cost = -1;
+            fill = visitedNodes.keySet().size();
             return null;
         }
         else
         {
-            int cost = 0;
+            cost = 0;
             for (int i=0;i<curNode.getEdges().size();i++)
             {
                 cost += curNode.getEdges().get(i).getWeight();
             }
+            fill = visitedNodes.keySet().size();
             //printStat(visitedNodes.keySet().size(), cost);
             return curNode.getEdges();
         }
