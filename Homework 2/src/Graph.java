@@ -10,7 +10,8 @@ import java.util.*;
  */
 public class Graph {
 
-    HashMap g = new HashMap();
+
+    HashMap g;
     PApplet pApplet;
 
     public Graph(PApplet p)
@@ -45,6 +46,8 @@ public class Graph {
 
     public void makeGraph(String fileName)
     {
+        g = new HashMap();
+
         StringBuffer stringBuffer = readFile(fileName);
         String toString = stringBuffer.toString();
         String edges[] = toString.split("\\r?\\n");

@@ -10,6 +10,7 @@ import java.util.*;
 public class PathFinding {
 
     PApplet pApplet;
+
     public static Comparator<node> idComparator = new Comparator<node>(){
 
         @Override
@@ -48,10 +49,11 @@ public class PathFinding {
 //            System.out.println();
 
             curNode = unvisitedNodes.poll();
-            System.out.println("Expanding node " + curNode.getNodeName());
 
             if (curNode.getNodeName() == target)
                 break;
+
+            System.out.println("Expanding node " + curNode.getNodeName());
 
             if (graph.containsKey(curNode.getNodeName()))
             {
@@ -104,7 +106,7 @@ public class PathFinding {
 
         if ((curNode == null) || (curNode.getEdges().get(curNode.getEdges().size()-1)).toNode!=target)
         {
-            printStat(visitedNodes.keySet().size(), -1);
+            //printStat(visitedNodes.keySet().size(), -1);
             return null;
         }
         else
@@ -114,7 +116,7 @@ public class PathFinding {
             {
                 cost += curNode.getEdges().get(i).getWeight();
             }
-            printStat(visitedNodes.keySet().size(), cost);
+            //printStat(visitedNodes.keySet().size(), cost);
             return curNode.getEdges();
         }
 
