@@ -2,9 +2,11 @@
   <library name="library">
     <CLASSES>
       <root url="file:///Applications/Processing.app/Contents/Java/core/library" />
+      <root url="file://$USER_HOME$/Downloads/controlP5-2.2.5/controlP5/library" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
     <jarDirectory url="file:///Applications/Processing.app/Contents/Java/core/library" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/Downloads/controlP5-2.2.5/controlP5/library" recursive="false" />
   </library>
 </component>
