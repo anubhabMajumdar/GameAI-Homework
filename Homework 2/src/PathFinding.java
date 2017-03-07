@@ -1,6 +1,5 @@
 import processing.core.PApplet;
 
-import javax.xml.soap.Node;
 import java.util.*;
 
 /**
@@ -12,11 +11,20 @@ public class PathFinding {
     PApplet pApplet;
     float cost;
     int fill;
-    public static Comparator<node> idComparator = new Comparator<node>(){
+    public static Comparator<Node> idComparatorDijkstra = new Comparator<Node>(){
 
         @Override
-        public int compare(node c1, node c2) {
+        public int compare(Node c1, Node c2) {
             return (int) (c1.getCsf() - c2.getCsf());
+        }
+
+    };
+
+    public static Comparator<Node> idComparatorAStar = new Comparator<Node>(){
+
+        @Override
+        public int compare(Node c1, Node c2) {
+            return (int) (c1.getEtc() - c2.getEtc());
         }
 
     };
@@ -29,16 +37,16 @@ public class PathFinding {
     public ArrayList<Edge> dijkstra(HashMap graph, int start, int target)
     {
 
-        PriorityQueue <node>  unvisitedNodes = new PriorityQueue <node> (idComparator);
+        PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorDijkstra);
         HashMap visitedNodes = new HashMap();
 
         int nodeName = start;
         float csf = 0;
         ArrayList<Edge> edges = new ArrayList<Edge>();
 
-        unvisitedNodes.add(new node(nodeName, edges, 0));
+        unvisitedNodes.add(new Node(nodeName, edges, 0));
 
-        node curNode = null;
+        Node curNode = null;
 
         while (!unvisitedNodes.isEmpty())
         {
@@ -46,7 +54,7 @@ public class PathFinding {
 //            System.out.print("Unvisited nodes = ");
 //            Object n[] =  unvisitedNodes.toArray();
 //            for (int i=0;i<unvisitedNodes.size();i++)
-//                System.out.print(((node)n[i]).getNodeName() + ", ");
+//                System.out.print(((Node)n[i]).getNodeName() + ", ");
 //            System.out.println();
 
             curNode = unvisitedNodes.poll();
@@ -54,7 +62,7 @@ public class PathFinding {
             if (curNode.getNodeName() == target)
                 break;
 
-            System.out.println("Expanding node " + curNode.getNodeName());
+            System.out.println("Expanding Node " + curNode.getNodeName());
 
             if (graph.containsKey(curNode.getNodeName()))
             {
@@ -69,12 +77,12 @@ public class PathFinding {
                         edges = (ArrayList<Edge>) curNode.getEdges().clone();
                         edges.add(curEdges.get(j));
 
-                        Iterator<node> itr = unvisitedNodes.iterator();
+                        Iterator<Node> itr = unvisitedNodes.iterator();
                         Boolean flag = true;
 
                         while (itr.hasNext())
                         {
-                            node temp = itr.next();
+                            Node temp = itr.next();
                             if (temp.getNodeName() == nodeName)
                             {
                                 if (temp.getCsf() > csf)
@@ -89,7 +97,7 @@ public class PathFinding {
                             }
                         }
                         if (flag)
-                            unvisitedNodes.add(new node(nodeName, edges, csf));
+                            unvisitedNodes.add(new Node(nodeName, edges, csf));
                     }
 
 
@@ -124,7 +132,131 @@ public class PathFinding {
             return curNode.getEdges();
         }
 
-    }
+    }   // End of dijkstra
+
+
+    public ArrayList<Edge> aStar(HashMap graph, int start, int target, String heuristicName)
+    {
+        PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorAStar);
+        HashMap visitedNodes = new HashMap();
+        Heuristic h = new Heuristic(heuristicName, target);
+
+        int nodeName = start;
+        float csf = 0;
+        ArrayList<Edge> edges = new ArrayList<Edge>();
+        Node curNode = new Node(nodeName, edges, csf);
+
+        float heuristic = h.heuristicValue(curNode);
+        float etc = csf + heuristic;
+        curNode.setEtc(etc);
+
+        unvisitedNodes.add(curNode);
+
+
+        while (!unvisitedNodes.isEmpty())
+        {
+
+//            System.out.print("Unvisited nodes = ");
+//            Object n[] =  unvisitedNodes.toArray();
+//            for (int i=0;i<unvisitedNodes.size();i++)
+//                System.out.print(((Node)n[i]).getNodeName() + ", ");
+//            System.out.println();
+
+            curNode = unvisitedNodes.poll();
+
+            if (curNode.getNodeName() == target)
+                break;
+
+            System.out.println("Expanding Node " + curNode.getNodeName());
+
+            if (graph.containsKey(curNode.getNodeName()))
+            {
+                ArrayList<Edge> curEdges = (ArrayList<Edge>) graph.get(curNode.getNodeName());
+
+                for (int j=0; j<curEdges.size(); j++)
+                {
+                    nodeName = curEdges.get(j).toNode;
+                    csf = curNode.csf + curEdges.get(j).weight;
+                    etc = csf + h.heuristicValue(curNode);
+                    edges = (ArrayList<Edge>) curNode.getEdges().clone();
+                    edges.add(curEdges.get(j));
+
+                    if (!visitedNodes.containsKey(nodeName))
+                    {
+                        Iterator<Node> itr = unvisitedNodes.iterator();
+                        Boolean flag = true;
+
+                        while (itr.hasNext())
+                        {
+                            Node temp = itr.next();
+                            if (temp.getNodeName() == nodeName)
+                            {
+                                if (temp.getEtc() > etc)
+                                {
+                                    unvisitedNodes.remove(temp);
+                                }
+                                else
+                                {
+                                    flag = false;
+                                }
+                                break;
+                            }
+                        }
+                        if (flag)
+                        {
+                            Node tempNode = new Node(nodeName, edges, csf);
+                            tempNode.setEtc(etc);
+                            unvisitedNodes.add(tempNode);
+                        }
+                    }
+                    else
+                    {
+                        Node tempNode = (Node) visitedNodes.get(nodeName);
+                        if (csf < tempNode.getCsf())
+                        {
+                            visitedNodes.remove(curNode.getNodeName());
+                            tempNode = new Node(nodeName, edges, csf);
+                            tempNode.setEtc(etc);
+                            unvisitedNodes.add(tempNode);
+                        }
+                    }
+                }
+
+                visitedNodes.put(curNode.getNodeName(), curNode);
+
+//                System.out.println("Visited nodes = " + visitedNodes.keySet());
+//                System.out.println();
+//                System.out.println();
+
+            }
+        }
+
+
+        if ((curNode == null) || (curNode.getNodeName()!=target))
+        {
+            //printStat(visitedNodes.keySet().size(), -1);
+            cost = -1;
+            fill = visitedNodes.keySet().size();
+            return null;
+        }
+        else
+        {
+            cost = 0;
+            for (int i=0;i<curNode.getEdges().size();i++)
+            {
+                cost += curNode.getEdges().get(i).getWeight();
+            }
+            fill = visitedNodes.keySet().size();
+            //printStat(visitedNodes.keySet().size(), cost);
+            return curNode.getEdges();
+        }
+
+
+
+
+
+
+    } // End of aStar
 
     public void prettyPrintPath(ArrayList<Edge> edges)
     {
@@ -148,13 +280,47 @@ public class PathFinding {
 
     }
 
-    public class node
+    public class Heuristic
+    {
+        String heuristicName;
+        int target;
+
+        public Heuristic(String heuristicName, int end)
+        {
+            this.heuristicName = heuristicName;
+            this.target = end;
+        }
+
+        public void setHeuristicName(String heuristicName)
+        {
+            this.heuristicName = heuristicName;
+        }
+
+        public float heuristicValue(Node n)
+        {
+            if (heuristicName.equals("naiveHeuristic"))
+                return naiveHeuristic(n);
+
+            return naiveHeuristic(n);
+
+        }
+
+        private float naiveHeuristic(Node n)
+        {
+            return (float) Math.pow((n.getNodeName()-target), 2);
+
+        }
+
+
+    }
+
+    public class Node
     {
         int nodeName;
-        float csf;
+        float csf, etc;
         ArrayList<Edge> edges;
 
-        public node(int n, ArrayList<Edge> e, float c)
+        public Node(int n, ArrayList<Edge> e, float c)
         {
             nodeName = n;
             edges = e;
@@ -175,6 +341,14 @@ public class PathFinding {
 
         public ArrayList<Edge> getEdges() {
             return edges;
+        }
+
+        public float getEtc() {
+            return etc;
+        }
+
+        public void setEtc(float etc) {
+            this.etc = etc;
         }
     }
 

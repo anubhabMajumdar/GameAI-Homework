@@ -68,7 +68,7 @@ public class DriverClass extends PApplet {
 
         targetNode = controlP5.addDropdownList("targetNode")
                 .setPosition(750, 50).setSize(200,200);
-        targetNode.setCaptionLabel("Target node");
+        targetNode.setCaptionLabel("Target Node");
         targetNode.close();
         customize(targetNode);
 
@@ -145,7 +145,8 @@ public class DriverClass extends PApplet {
                     if (algo.equals("Dijkstra"))
                         edges = pathFinding.dijkstra(newG.g, start, stop);
                     else if (algo.equals("A*"))
-                        System.out.println("A*");//pathFinding.dijkstra(newG.g, start, stop);
+                        edges = pathFinding.aStar(newG.g, start, stop, "naiveHeuristic");
+                        //System.out.println("A*");//pathFinding.dijkstra(newG.g, start, stop);
 
 
                     cost.setText(Float.toString(pathFinding.cost));
@@ -200,7 +201,7 @@ public class DriverClass extends PApplet {
 
                 targetNode = controlP5.addDropdownList("targetNode")
                         .setPosition(750, 50).setSize(200,200);
-                targetNode.setCaptionLabel("Target node");
+                targetNode.setCaptionLabel("Target Node");
                 targetNode.close();
                 customize(targetNode);
 
