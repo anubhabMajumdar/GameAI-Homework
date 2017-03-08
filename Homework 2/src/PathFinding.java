@@ -139,7 +139,7 @@ public class PathFinding {
     {
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorAStar);
         HashMap visitedNodes = new HashMap();
-        Heuristic h = new Heuristic(heuristicName, target);
+        Heuristic h = new Heuristic(heuristicName, graph, target);
 
         int nodeName = start;
         float csf = 0;
@@ -159,7 +159,7 @@ public class PathFinding {
 //            System.out.print("Unvisited nodes = ");
 //            Object n[] =  unvisitedNodes.toArray();
 //            for (int i=0;i<unvisitedNodes.size();i++)
-//                System.out.print(((Node)n[i]).getNodeName() + ", ");
+//                System.out.print(((Node)n[i]).getNodeName() + "( " + ((Node)n[i]).getCsf() + ", " + ((Node)n[i]).getEtc() + " )" + " , ");
 //            System.out.println();
 
             curNode = unvisitedNodes.poll();
@@ -176,10 +176,10 @@ public class PathFinding {
                 for (int j=0; j<curEdges.size(); j++)
                 {
                     nodeName = curEdges.get(j).toNode;
-                    csf = curNode.csf + curEdges.get(j).weight;
-                    etc = csf + h.heuristicValue(curNode);
+                    csf = curNode.getCsf() + curEdges.get(j).getWeight();
                     edges = (ArrayList<Edge>) curNode.getEdges().clone();
                     edges.add(curEdges.get(j));
+                    etc = csf + h.heuristicValue(new Node(nodeName, edges, csf));
 
                     if (!visitedNodes.containsKey(nodeName))
                     {
@@ -212,10 +212,12 @@ public class PathFinding {
                     else
                     {
                         Node tempNode = (Node) visitedNodes.get(nodeName);
-                        if (csf < tempNode.getCsf())
+                        //if (csf < tempNode.getCsf())
+                        if (etc < tempNode.getEtc())
                         {
                             visitedNodes.remove(curNode.getNodeName());
                             tempNode = new Node(nodeName, edges, csf);
+                            //etc = csf + h.heuristicValue(tempNode);
                             tempNode.setEtc(etc);
                             unvisitedNodes.add(tempNode);
                         }
@@ -284,11 +286,13 @@ public class PathFinding {
     {
         String heuristicName;
         int target;
+        HashMap graph;
 
-        public Heuristic(String heuristicName, int end)
+        public Heuristic(String heuristicName, HashMap graph, int end)
         {
             this.heuristicName = heuristicName;
             this.target = end;
+            this.graph = graph;
         }
 
         public void setHeuristicName(String heuristicName)
@@ -298,17 +302,28 @@ public class PathFinding {
 
         public float heuristicValue(Node n)
         {
-            if (heuristicName.equals("naiveHeuristic"))
-                return naiveHeuristic(n);
+            if (heuristicName.equals("distanceHeuristic"))
+                return distanceHeuristic(n);
+            else if ((heuristicName.equals("cluterHeuristic")))
+                return cluterHeuristic(n);
 
-            return naiveHeuristic(n);
+            return distanceHeuristic(n);
 
         }
 
-        private float naiveHeuristic(Node n)
+        private float distanceHeuristic(Node n)
         {
-            return (float) Math.pow((n.getNodeName()-target), 2);
+            return (float) Math.abs(Math.pow((n.getNodeName()-target), 2));
 
+        }
+
+        private float cluterHeuristic(Node n)
+        {
+            if (graph.get(n.getNodeName()) == graph.get(target))
+                return 0;
+            else
+                return 100;
+                //return Math.abs(((int)graph.get(n.getNodeName())) - ((int)graph.get(target))) * 1000;
         }
 
 
@@ -325,6 +340,7 @@ public class PathFinding {
             nodeName = n;
             edges = e;
             csf = c;
+            etc = csf;
         }
 
         public float getCsf() {

@@ -12,6 +12,7 @@ public class Graph {
 
 
     HashMap g;
+    HashMap clusterInfo;
     PApplet pApplet;
 
     public Graph(PApplet p)
@@ -47,6 +48,7 @@ public class Graph {
     public void makeGraph(String fileName)
     {
         g = new HashMap();
+        clusterInfo = new HashMap();
 
         StringBuffer stringBuffer = readFile(fileName);
         String toString = stringBuffer.toString();
@@ -62,8 +64,11 @@ public class Graph {
             int toNode = Integer.parseInt(vals[1]);
             float weight;
 
-            if (vals.length == 3) {
+            if (vals.length == 4) {
                 weight = Float.parseFloat(vals[2]);
+                if (!clusterInfo.containsKey(fromNode))
+                    clusterInfo.put(fromNode, Integer.parseInt(vals[3]));
+
             }
             else
             {

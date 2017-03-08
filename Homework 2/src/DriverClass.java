@@ -145,8 +145,12 @@ public class DriverClass extends PApplet {
                     if (algo.equals("Dijkstra"))
                         edges = pathFinding.dijkstra(newG.g, start, stop);
                     else if (algo.equals("A*"))
-                        edges = pathFinding.aStar(newG.g, start, stop, "naiveHeuristic");
-                        //System.out.println("A*");//pathFinding.dijkstra(newG.g, start, stop);
+                    {
+                        edges = pathFinding.aStar(newG.g, start, stop, "distanceHeuristic");
+                        //edges = pathFinding.aStar(newG.g, start, stop, "clusterHeuristic");
+                    }
+
+                    //System.out.println("A*");//pathFinding.dijkstra(newG.g, start, stop);
 
 
                     cost.setText(Float.toString(pathFinding.cost));
@@ -181,7 +185,7 @@ public class DriverClass extends PApplet {
             else if (theEvent.getController().getName().equals("graphName"))
             {
                 if (theEvent.getController().getValue() == 0.0f)
-                    graph = "world_graph.txt";
+                    graph = "world_graph2.txt";
                 else
                     graph = "cit-HepPh.txt";
 
