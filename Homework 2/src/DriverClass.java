@@ -12,21 +12,22 @@ import java.util.Objects;
 public class DriverClass extends PApplet {
 
     ControlP5 controlP5;
-    DropdownList algorithm, graphName, startNode, targetNode;
-    String algo, graph;
+    DropdownList algorithm, graphName, startNode, targetNode, heuristic;
+    String algo, graph, heuristicName;
     int start, stop;
     Graph newG;
     PathFinding pathFinding;
     Textarea cost, fill, path;
 
     public void settings(){
-        size(1000,800);
+        size(1250,800);
 
         newG = null;
         pathFinding = new PathFinding(this);
 
         algo = "Dijkstra";
         graph = "world_graph.txt";
+        heuristicName = "distanceHeuristic";
 
         start = 1;
         stop = 1;
@@ -71,6 +72,14 @@ public class DriverClass extends PApplet {
         targetNode.setCaptionLabel("Target Node");
         targetNode.close();
         customize(targetNode);
+
+
+        heuristic = controlP5.addDropdownList("heuristic")
+                .setPosition(1000, 50).setSize(200,200);
+        heuristic.setCaptionLabel("Heuristic");
+        heuristic.close();
+        customize(heuristic);
+
 
 
         controlP5.addButton("Go")
@@ -143,10 +152,12 @@ public class DriverClass extends PApplet {
 
                 if (newG!=null) {
                     if (algo.equals("Dijkstra"))
-                        edges = pathFinding.dijkstra(newG.g, start, stop);
+                        edges = pathFinding.dijkstra(newG, start, stop);
                     else if (algo.equals("A*"))
                     {
-                        edges = pathFinding.aStar(newG.g, start, stop, "distanceHeuristic");
+                        edges = pathFinding.aStar(newG, start, stop, heuristicName);
+
+                        //edges = pathFinding.aStar(newG.g, start, stop, "distanceHeuristic");
                         //edges = pathFinding.aStar(newG.g, start, stop, "clusterHeuristic");
                     }
 
@@ -178,9 +189,24 @@ public class DriverClass extends PApplet {
             else if (theEvent.getController().getName().equals("algorithm"))
             {
                 if (theEvent.getController().getValue() == 0.0f)
+                {
                     algo = "Dijkstra";
+
+                    heuristic.remove();
+
+                    heuristic = controlP5.addDropdownList("heuristic")
+                            .setPosition(1000, 50).setSize(200,200);
+                    heuristic.setCaptionLabel("Heuristic");
+                    heuristic.close();
+                    customize(heuristic);
+                }
                 else
+                {
                     algo = "A*";
+
+                    heuristic.addItem("Distance Heuristic", "distanceHeuristic");
+                    heuristic.addItem("Cluster Heuristic", "clusterHeuristic");
+                }
             }
             else if (theEvent.getController().getName().equals("graphName"))
             {
@@ -235,8 +261,13 @@ public class DriverClass extends PApplet {
                 //System.out.println(l.get((int)theEvent.getController().getValue()));
             }
 
-            //System.out.println(algo + "   " + graph);
-
+            else if (theEvent.getController().getName().equals("heuristic")) {
+                if (theEvent.getController().getValue() == 0.0f) {
+                    heuristicName = "distanceHeuristic";
+                } else {
+                    heuristicName = "clusterHeuristic";
+                }
+            }
         }
         else if(theEvent.isGroup()) {
             // check if the Event was triggered from a ControlGroup

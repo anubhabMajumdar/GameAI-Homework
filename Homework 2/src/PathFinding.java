@@ -34,9 +34,9 @@ public class PathFinding {
         pApplet = p;
     }
 
-    public ArrayList<Edge> dijkstra(HashMap graph, int start, int target)
+    public ArrayList<Edge> dijkstra(Graph worldGraph, int start, int target)
     {
-
+        HashMap graph = worldGraph.g;
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorDijkstra);
         HashMap visitedNodes = new HashMap();
 
@@ -135,11 +135,12 @@ public class PathFinding {
     }   // End of dijkstra
 
 
-    public ArrayList<Edge> aStar(HashMap graph, int start, int target, String heuristicName)
+    public ArrayList<Edge> aStar(Graph worldGraph, int start, int target, String heuristicName)
     {
+        HashMap graph = worldGraph.g;
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorAStar);
         HashMap visitedNodes = new HashMap();
-        Heuristic h = new Heuristic(heuristicName, graph, target);
+        Heuristic h = new Heuristic(heuristicName, worldGraph, target);
 
         int nodeName = start;
         float csf = 0;
@@ -286,13 +287,15 @@ public class PathFinding {
     {
         String heuristicName;
         int target;
+        Graph worldGraph;
         HashMap graph;
 
-        public Heuristic(String heuristicName, HashMap graph, int end)
+        public Heuristic(String heuristicName, Graph worldGraph, int end)
         {
             this.heuristicName = heuristicName;
             this.target = end;
-            this.graph = graph;
+            this.worldGraph = worldGraph;
+            this.graph = worldGraph.g;
         }
 
         public void setHeuristicName(String heuristicName)
@@ -304,7 +307,7 @@ public class PathFinding {
         {
             if (heuristicName.equals("distanceHeuristic"))
                 return distanceHeuristic(n);
-            else if ((heuristicName.equals("cluterHeuristic")))
+            else if ((heuristicName.equals("clusterHeuristic")))
                 return cluterHeuristic(n);
 
             return distanceHeuristic(n);
@@ -319,11 +322,14 @@ public class PathFinding {
 
         private float cluterHeuristic(Node n)
         {
-            if (graph.get(n.getNodeName()) == graph.get(target))
+            if (worldGraph.clusterInfo.get(n.getNodeName()) == worldGraph.clusterInfo.get(target))
                 return 0;
             else
-                return 100;
-                //return Math.abs(((int)graph.get(n.getNodeName())) - ((int)graph.get(target))) * 1000;
+                if ((worldGraph.clusterInfo.containsKey(n.getNodeName())) && (worldGraph.clusterInfo.containsKey(target)))
+                    return Math.abs(((int)worldGraph.clusterInfo.get(n.getNodeName()) - (int)worldGraph.clusterInfo.get(target)) * 100);
+                else
+                    return 100;
+
         }
 
 

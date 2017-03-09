@@ -73,6 +73,8 @@ public class Graph {
             else
             {
                 weight = pApplet.random(1,100);
+                if (!clusterInfo.containsKey(fromNode))
+                    clusterInfo.put(fromNode, fromNode%10);
             }
 
                 ArrayList<Edge> outEdges;
