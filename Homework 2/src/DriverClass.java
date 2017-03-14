@@ -155,7 +155,7 @@ public class DriverClass extends PApplet {
                         edges = pathFinding.dijkstra(newG, start, stop);
                     else if (algo.equals("A*"))
                     {
-                        edges = pathFinding.aStar(newG, start, stop, heuristicName);
+                        edges = pathFinding.aStar(newG, start, stop, heuristicName, graph);
 
                         //edges = pathFinding.aStar(newG.g, start, stop, "distanceHeuristic");
                         //edges = pathFinding.aStar(newG.g, start, stop, "clusterHeuristic");

@@ -1,5 +1,9 @@
 import processing.core.PApplet;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -135,12 +139,12 @@ public class PathFinding {
     }   // End of dijkstra
 
 
-    public ArrayList<Edge> aStar(Graph worldGraph, int start, int target, String heuristicName)
+    public ArrayList<Edge> aStar(Graph worldGraph, int start, int target, String heuristicName, String graphName)
     {
         HashMap graph = worldGraph.g;
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorAStar);
         HashMap visitedNodes = new HashMap();
-        Heuristic h = new Heuristic(heuristicName, worldGraph, target);
+        Heuristic h = new Heuristic(heuristicName, worldGraph, target, graphName);
 
         int nodeName = start;
         float csf = 0;
@@ -289,13 +293,17 @@ public class PathFinding {
         int target;
         Graph worldGraph;
         HashMap graph;
+        String graphName;
+        int[][] cd;
 
-        public Heuristic(String heuristicName, Graph worldGraph, int end)
+        public Heuristic(String heuristicName, Graph worldGraph, int end, String graphName)
         {
             this.heuristicName = heuristicName;
             this.target = end;
             this.worldGraph = worldGraph;
             this.graph = worldGraph.g;
+            this.graphName = graphName;
+            this.cd = getClusterLookUp("clusterLookUpTable.txt");
         }
 
         public void setHeuristicName(String heuristicName)
@@ -322,6 +330,17 @@ public class PathFinding {
 
         private float cluterHeuristic(Node n)
         {
+            if (graphName.equals("cit-HepPh.txt"))
+            {
+                return cluterHeuristicLargeGraph(n);
+            }
+            else
+                return cluterHeuristicWorldGraph(n, cd);
+        }
+
+        private float cluterHeuristicLargeGraph(Node n)
+        {
+            //System.out.println("Large Graph");
             if (worldGraph.clusterInfo.get(n.getNodeName()) == worldGraph.clusterInfo.get(target))
                 return 0;
             else
@@ -331,6 +350,73 @@ public class PathFinding {
                     return 100;
 
         }
+
+        private float cluterHeuristicWorldGraph(Node n, int[][] clusterDist)
+        {
+            //System.out.println("World Graph");
+            int nodeCluster = (int) worldGraph.clusterInfo.get(n.getNodeName());
+            int targetCluster = (int) worldGraph.clusterInfo.get(target);
+
+            return (float) Math.pow(clusterDist[nodeCluster-1][targetCluster-1],2);
+        }
+
+        private int[][] getClusterLookUp(String fileName)
+        {
+            StringBuffer stringBuffer = readFile(fileName);
+            String toString = stringBuffer.toString();
+            String edges[] = toString.split("\\r?\\n");
+
+            int clusterDist[][] = new int[edges.length-1][edges.length-1];
+
+            for (int i=1;i<edges.length;i++)
+            {
+                String cur = edges[i];
+                String vals[] = cur.split("\\t");
+
+                for (int j=1;j<vals.length;j++)
+                {
+                    clusterDist[i-1][j-1] = Integer.parseInt(vals[j]);
+                }
+            }
+//            for (int i=0;i<edges.length-1;i++)
+//            {
+//                for (int j=0;j<edges.length-1;j++)
+//                {
+//                    System.out.print(clusterDist[i][j]+"\t");
+//                }
+//                System.out.println();
+//            }
+
+            return clusterDist;
+
+        }
+
+        public StringBuffer readFile(String fileName)
+        {
+            StringBuffer stringBuffer = new StringBuffer();
+
+            try {
+                File file = new File(fileName);
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuffer.append(line);
+                    stringBuffer.append("\n");
+                }
+                fileReader.close();
+//            System.out.println("Contents of file:");
+//            System.out.println(stringBuffer.toString());
+
+            } catch (IOException e) {
+                System.out.println("Wrong filename");
+                e.printStackTrace();
+            }
+
+            return stringBuffer;
+        }
+
+
 
 
     }
