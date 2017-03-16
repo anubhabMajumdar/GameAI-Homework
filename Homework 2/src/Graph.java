@@ -95,10 +95,10 @@ public class Graph {
                     g.put(fromNode, outEdges);
 
         }
-        System.out.println("Number of vertices = " + g.keySet().size());
-        System.out.println("Number of edges = " + (edges.length-1));
-
-        prettyPrint();
+//        System.out.println("Number of vertices = " + g.keySet().size());
+//        System.out.println("Number of edges = " + (edges.length-1));
+//
+//        prettyPrint();
 
     }
 

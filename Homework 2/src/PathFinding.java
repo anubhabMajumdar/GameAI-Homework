@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.instrument.Instrumentation;
 import java.util.*;
 
 /**
@@ -15,6 +16,9 @@ public class PathFinding {
     PApplet pApplet;
     float cost;
     int fill;
+    private static Instrumentation instrumentation;
+    long nodeSize;
+
     public static Comparator<Node> idComparatorDijkstra = new Comparator<Node>(){
 
         @Override
@@ -36,6 +40,8 @@ public class PathFinding {
     public PathFinding(PApplet p)
     {
         pApplet = p;
+        ArrayList<Edge> edges = new ArrayList<Edge>();
+
     }
 
     public ArrayList<Edge> dijkstra(Graph worldGraph, int start, int target)
@@ -47,6 +53,7 @@ public class PathFinding {
         int nodeName = start;
         float csf = 0;
         ArrayList<Edge> edges = new ArrayList<Edge>();
+        //nodeSize = instrumentation.getObjectSize(new Node(0, edges, 0));
 
         unvisitedNodes.add(new Node(nodeName, edges, 0));
 
@@ -66,7 +73,7 @@ public class PathFinding {
             if (curNode.getNodeName() == target)
                 break;
 
-            System.out.println("Expanding Node " + curNode.getNodeName());
+            //System.out.println("Expanding Node " + curNode.getNodeName());
 
             if (graph.containsKey(curNode.getNodeName()))
             {
@@ -149,6 +156,8 @@ public class PathFinding {
         int nodeName = start;
         float csf = 0;
         ArrayList<Edge> edges = new ArrayList<Edge>();
+        //nodeSize = instrumentation.getObjectSize((new Node(0, edges, 0)));
+
         Node curNode = new Node(nodeName, edges, csf);
 
         float heuristic = h.heuristicValue(curNode);
@@ -172,7 +181,7 @@ public class PathFinding {
             if (curNode.getNodeName() == target)
                 break;
 
-            System.out.println("Expanding Node " + curNode.getNodeName());
+            //System.out.println("Expanding Node " + curNode.getNodeName());
 
             if (graph.containsKey(curNode.getNodeName()))
             {
@@ -415,10 +424,6 @@ public class PathFinding {
 
             return stringBuffer;
         }
-
-
-
-
     }
 
     public class Node
