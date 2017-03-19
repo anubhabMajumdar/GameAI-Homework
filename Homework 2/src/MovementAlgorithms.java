@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class MovementAlgorithms {
 
     PApplet pApplet;
-    float align_ROS, align_ROD, align_timeToTargetAcc, arrive_ROS, arrive_ROD, arrive_timeToTargetAcc;
+    float align_ROS, align_ROD, align_timeToTargetAcc, arrive_ROS, arrive_ROD, arrive_timeToTargetAcc, predictTime;
 
     MovementAlgorithms(PApplet p)
     {
@@ -24,6 +24,8 @@ public class MovementAlgorithms {
         arrive_ROD = 50;
         arrive_timeToTargetAcc = 10;
 
+        predictTime = 10;
+
 
 
     }
@@ -32,6 +34,13 @@ public class MovementAlgorithms {
     {
         PVector deltaPos = PVector.sub(targetPos, character.getPosition());
 
+        if (deltaPos.mag() < arrive_ROS)
+        {
+
+            character.setVelocity(new PVector(0,0));
+            character.setAcceleration(new PVector(0,0));
+            return;
+        }
         character.setAcceleration(deltaPos.normalize().mult(character.maxAcc));
     }
 
@@ -95,6 +104,42 @@ public class MovementAlgorithms {
 
     }
 
+    public int pathFollowing(SteeringClass character, ArrayList<PVector> path, int lastIndex)
+    {
+        if (path.size()>0)
+        {
+            int nextPoint = nearestPoint(character.getPosition(), path, lastIndex, 3);
+            seek(character, path.get(nextPoint));
+            return nextPoint;
+
+        }
+        return lastIndex;
+
+    }
+
+    public int nearestPoint(PVector charPos, ArrayList<PVector> path, int lastIndex, int offset)
+    {
+        float dist = Float.MAX_VALUE;
+
+        int curIndex=lastIndex;
+
+        int last = lastIndex+offset;
+        if (last>path.size())
+            last = path.size();
+
+        for (int i=lastIndex+1;i<last;i++)
+        {
+            float temp = (PVector.sub(path.get(i), charPos)).mag();
+            if (temp<dist)
+            {
+                dist = temp;
+                curIndex = i;
+            }
+        }
+
+        return curIndex;
+
+    }
 
     public void collisionAvoidance(SteeringClass character, SteeringClass target, float charRad, float targetRad)
     {

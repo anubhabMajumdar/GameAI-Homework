@@ -2,7 +2,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.io.*;
 
 /**
@@ -21,11 +21,13 @@ public class IndoorPathfinding extends PApplet {
     int target;
     MovementAlgorithms movementAlgorithms;
     ArrayList<Edge> edges;
+    ArrayList<PVector> path;
+    int lastIndex;
 
 
     public void settings()
     {
-        size(500, 260);
+        size(500, 300);
 
         tileSize = 10;
         tileCountWidth = width/tileSize;
@@ -47,6 +49,9 @@ public class IndoorPathfinding extends PApplet {
         movementAlgorithms = new MovementAlgorithms(this);
 
         edges = new ArrayList<Edge>();
+        path = new ArrayList<PVector>();
+
+        lastIndex = 0;
 
     }
 
@@ -69,23 +74,97 @@ public class IndoorPathfinding extends PApplet {
 
     public void draw()
     {
-        //background(0);
+        image(pImage, -0, 0, width, height);
+        filter(THRESHOLD,0.5f);
+
+//        for (int i=0;i<allTiles.size();i++)
+//        {
+//            PVector p = getPosFromTile(allTiles.get(i), tileSize);
+//            ellipse(p.x, p.y, 5, 5);
+//        }
+
+        //prettyPrintGrid(roomGraph);
+
+
         if (mousePressed)
         {
+            edges.clear();
+            path.clear();
+            lastIndex = 0;
+
             Tile target = new Tile(mouseX, mouseY, tileSize);
             Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize);
-            //println(tile.tileNumber + "\t" + tile.obstacle);
-            println(target.tileNumber + "\t" + charPos.tileNumber);
+
+            println(charPos.tileNumber + "\t" + target.tileNumber);
 
 
-            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
-            //printPath(edges);
+            //edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
+            edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic", "");
+            if (edges!=null) {
+                for (int i = 0; i < edges.size(); i++)
+                    path.add(getPosFromTile(getTileFromTileNum(edges.get(i).toNode), tileSize));
+            }
+            else
+            {
+                println("No Path");
+                edges = new ArrayList<Edge>();
+            }
+
+            printPath(edges);
         }
-        edges = guideCharacter(edges);
+        //edges = guideCharacter(edges);
+        lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
+        //println(character.getAcceleration().mag());
+
+        customShape.setOrientation(character.getOrientation());
+        customShape.drawCustomShape(character.getPosition().x,character.getPosition().y);
+
+        character.update(1);
+        drawPath(path);
+
+    }
+
+    public void prettyPrintGrid(Graph graph)
+    {
+        HashMap g = graph.g;
+        // Get a set of the entries
+        Set set = g.entrySet();
+
+        // Get an iterator
+        Iterator i = set.iterator();
+
+        // Display elements
+        while(i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            //System.out.print(me.getKey() + ": [ ");
+            ArrayList<Edge> edges = (ArrayList<Edge>) me.getValue();
+
+            for (int j=0; j<edges.size(); j++)
+            {
+                int to = edges.get(j).toNode;
+                int from = edges.get(j).fromNode;
+
+                PVector toNode = getPosFromTile(getTileFromTileNum(to), tileSize);
+                PVector fromNode = getPosFromTile(getTileFromTileNum(from), tileSize);
+
+                line(toNode.x, toNode.y, fromNode.x, fromNode.y);
 
 
+            }
 
+            //System.out.println(" ]");
 
+        }
+        //System.out.println();
+
+    }
+
+    public void drawPath(ArrayList<PVector> path)
+    {
+        for (int i=0;i<path.size()-1;i++)
+        {
+            line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
+        }
     }
 
     public ArrayList<Edge> guideCharacter(ArrayList<Edge> edges)
@@ -179,31 +258,30 @@ public class IndoorPathfinding extends PApplet {
 
         for (int i=0;i<allTiles.size();i++)
         {
-            int neighbourTop=-1, neighbourLeft=-1, neighbourRight=-1, neighbourBottom=-1;
-            if (i>tileCountWidth)
-                neighbourTop = i-tileCountWidth;
-            if (i<(tileCountHeight-1)*tileCountWidth)
-                neighbourBottom = i+tileCountWidth;
-            if (((i+1)%tileCountWidth)!=0)
-                neighbourRight = i+1;
-            if ((i%tileCountWidth)!=0)
-                neighbourLeft = i-1;
+            int curTileNum = allTiles.get(i).tileNumber;
+            if (!allTiles.get(i).obstacle) {
+                int neighbourTop = -1, neighbourLeft = -1, neighbourRight = -1, neighbourBottom = -1;
+                if (curTileNum > tileCountWidth)
+                    neighbourTop = curTileNum - tileCountWidth;
+                if (curTileNum < (tileCountHeight - 1) * tileCountWidth)
+                    neighbourBottom = curTileNum + tileCountWidth;
+                if (((curTileNum + 1) % tileCountWidth) != 0)
+                    neighbourRight = curTileNum + 1;
+                if ((curTileNum % tileCountWidth) != 0)
+                    neighbourLeft = curTileNum - 1;
 
-            if ((neighbourTop!=-1) && (!(allTiles.get(neighbourTop).obstacle)))
-            {
-                bufferedWriter.write(i+"\t"+neighbourTop+"\t"+"1\t1\n");
-            }
-            if ((neighbourBottom!=-1) && (!(allTiles.get(neighbourBottom).obstacle)))
-            {
-                bufferedWriter.write(i+"\t"+neighbourBottom+"\t"+"1\t1\n");
-            }
-            if ((neighbourRight!=-1) && (!(allTiles.get(neighbourRight).obstacle)))
-            {
-                bufferedWriter.write(i+"\t"+neighbourRight+"\t"+"1\t1\n");
-            }
-            if ((neighbourLeft!=-1) && (!(allTiles.get(neighbourLeft).obstacle)))
-            {
-                bufferedWriter.write(i+"\t"+neighbourLeft+"\t"+"1\t1\n");
+                if ((neighbourTop != -1) && (!(getTileFromTileNum(neighbourTop).obstacle))) {
+                    bufferedWriter.write(curTileNum + "\t" + neighbourTop + "\t" + "1\t1\n");
+                }
+                if ((neighbourBottom != -1) && (!(getTileFromTileNum(neighbourBottom).obstacle))) {
+                    bufferedWriter.write(curTileNum + "\t" + neighbourBottom + "\t" + "1\t1\n");
+                }
+                if ((neighbourRight != -1) && (!(getTileFromTileNum(neighbourRight).obstacle))) {
+                    bufferedWriter.write(curTileNum + "\t" + neighbourRight + "\t" + "1\t1\n");
+                }
+                if ((neighbourLeft != -1) && (!(getTileFromTileNum(neighbourLeft).obstacle))) {
+                    bufferedWriter.write(curTileNum + "\t" + neighbourLeft + "\t" + "1\t1\n");
+                }
             }
         }
 
