@@ -29,7 +29,7 @@ public class SteeringClass {
 
         maxRot = 0.05f;
         maxSpeed = 1;
-        maxAcc = 0.005f;
+        maxAcc = 0.001f;
         maxVel = new PVector(1,1);
         maxAngAcc = 0.1f;
     }

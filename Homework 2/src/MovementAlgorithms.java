@@ -20,7 +20,7 @@ public class MovementAlgorithms {
         align_ROD = pApplet.radians(20);
         align_timeToTargetAcc = 10;
 
-        arrive_ROS = 10;
+        arrive_ROS = 5;
         arrive_ROD = 50;
         arrive_timeToTargetAcc = 10;
 
@@ -108,8 +108,14 @@ public class MovementAlgorithms {
     {
         if (path.size()>0)
         {
-            int nextPoint = nearestPoint(character.getPosition(), path, lastIndex, 3);
-            seek(character, path.get(nextPoint));
+            int offset = 3;
+            int curindex = nearestPoint(character.getPosition(), path, -1, path.size());
+            //int nextPoint = nearestPoint(character.getPosition(), path, curindex+1, offset);
+            int nextPoint = curindex + offset;
+            if (nextPoint>=path.size())
+                nextPoint = path.size()-1;
+            align(character, getOrientationFromVector(PVector.sub(path.get(nextPoint), character.getPosition())));
+            arrive(character, path.get(nextPoint));
             return nextPoint;
 
         }

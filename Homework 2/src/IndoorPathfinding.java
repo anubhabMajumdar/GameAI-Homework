@@ -23,6 +23,7 @@ public class IndoorPathfinding extends PApplet {
     ArrayList<Edge> edges;
     ArrayList<PVector> path;
     int lastIndex;
+    int startTime;
 
 
     public void settings()
@@ -52,6 +53,8 @@ public class IndoorPathfinding extends PApplet {
         path = new ArrayList<PVector>();
 
         lastIndex = 0;
+
+        startTime = millis();
 
     }
 
@@ -83,7 +86,7 @@ public class IndoorPathfinding extends PApplet {
 //            ellipse(p.x, p.y, 5, 5);
 //        }
 
-        //prettyPrintGrid(roomGraph);
+//        prettyPrintGrid(roomGraph);
 
 
         if (mousePressed)
@@ -95,10 +98,10 @@ public class IndoorPathfinding extends PApplet {
             Tile target = new Tile(mouseX, mouseY, tileSize);
             Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize);
 
-            println(charPos.tileNumber + "\t" + target.tileNumber);
+            //println(charPos.tileNumber + "\t" + target.tileNumber);
 
 
-            //edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
+//            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
             edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic", "");
             if (edges!=null) {
                 for (int i = 0; i < edges.size(); i++)
@@ -110,17 +113,19 @@ public class IndoorPathfinding extends PApplet {
                 edges = new ArrayList<Edge>();
             }
 
-            printPath(edges);
+            //printPath(edges);
         }
-        //edges = guideCharacter(edges);
+
+        startTime = millis();
         lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
-        //println(character.getAcceleration().mag());
 
         customShape.setOrientation(character.getOrientation());
-        customShape.drawCustomShape(character.getPosition().x,character.getPosition().y);
+        customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
+        customShape.drawBreadcrumbs();
 
         character.update(1);
-        drawPath(path);
+
+        //drawPath(path);
 
     }
 
