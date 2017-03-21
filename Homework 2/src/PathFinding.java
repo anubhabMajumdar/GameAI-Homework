@@ -55,6 +55,7 @@ public class PathFinding {
         maxUnvisitedNodeList = 0;
         fill = 0;
         HashMap graph = worldGraph.g;
+/* Followed the example provided here - http://www.programcreek.com/2009/02/using-the-priorityqueue-class-example/ */
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorDijkstra);
         HashMap visitedNodes = new HashMap();
 
