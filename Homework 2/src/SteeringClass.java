@@ -2,6 +2,8 @@ import processing.core.*;
 
 /**
  * Created by anubhabmajumdar on 1/30/17.
+ * Referenced the book "AI for games, 2nd edition" by Ian Millington and John Funge
+ * Referenced the algorithms from class notes
  */
 
 public class SteeringClass {

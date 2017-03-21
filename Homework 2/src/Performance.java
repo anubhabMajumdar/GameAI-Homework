@@ -5,6 +5,7 @@ import java.util.Random;
 
 /**
  * Created by anubhabmajumdar on 3/16/17.
+ * For measuring time, I referenced the blog post here - http://stackoverflow.com/questions/11785200/how-can-i-get-the-current-milliseconds-from-the-current-time
  */
 public class Performance {
 
@@ -12,6 +13,11 @@ public class Performance {
     Random random = new Random();
 
     int n = 100;
+
+    public void setN(int num)
+    {
+        n = num;
+    }
 
     private double avgList_long(ArrayList list)
     {
@@ -35,6 +41,7 @@ public class Performance {
 
     public double[] measureTime(Graph graph, ArrayList list)
     {
+/* Followed the example provided here - http://stackoverflow.com/questions/11785200/how-can-i-get-the-current-milliseconds-from-the-current-time */
         long millis_start;
         long millis_stop;
         ArrayList time_dijkstra = new ArrayList();
@@ -94,10 +101,10 @@ public class Performance {
             int stop = random.nextInt(list.size());
 
             pathFinding.dijkstra(graph, start, stop);
-            fill_dijkstra.add(pathFinding.fill);
+            fill_dijkstra.add(pathFinding.maxUnvisitedNodeList);
 
             pathFinding.aStar(graph, start, stop, "distanceHeuristic", "" );
-            fill_astar.add(pathFinding.fill);
+            fill_astar.add(pathFinding.maxUnvisitedNodeList);
         }
 
         double avg_dijkstra = avgList_int(fill_dijkstra);
@@ -108,9 +115,8 @@ public class Performance {
 
     }
 
-    public static void main(String args[])
+    public void measurePerformance()
     {
-        Performance performance = new Performance();
 
         String [] files = {"world_graph2.txt", "cit-HepPh.txt"};
         Graph newG = new Graph(new PApplet());
@@ -121,15 +127,29 @@ public class Performance {
             newG.makeGraph(files[i]);
             l = new ArrayList<Integer>(newG.g.keySet());
 
-            results_time = performance.measureTime(newG,l);
+            results_time = measureTime(newG,l);
             System.out.println("Time --> " + files[i] + " " + results_time[0] + " " + results_time[1]);
 
-            results_fill = performance.measureFill(newG, l);
+            results_fill = measureFill(newG, l);
             System.out.println("Fill --> " + files[i] + " " + results_fill[0] + " " + results_fill[1]);
 
-            results_mem = performance.measureMemory(newG, l);
+            results_mem = measureMemory(newG, l);
             System.out.println("Memory --> " + files[i] + " " + results_mem[0] + " " + results_mem[1]);
 
+            System.out.println();
+
+        }
+    }
+
+    public static void main(String args[])
+    {
+        Performance performance = new Performance();
+
+        for (int i=100;i<=1000;i+=100)
+        {
+            performance.setN(i);
+            System.out.println("N = " + i);
+            performance.measurePerformance();
         }
 
     }

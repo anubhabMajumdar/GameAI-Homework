@@ -23,7 +23,7 @@ public class Graph {
     public StringBuffer readFile(String fileName)
     {
         StringBuffer stringBuffer = new StringBuffer();
-
+/* Followed the example provided here - http://www.avajava.com/tutorials/lessons/how-do-i-read-a-string-from-a-file-line-by-line.html */
         try {
             File file = new File(fileName);
             FileReader fileReader = new FileReader(file);
@@ -34,8 +34,6 @@ public class Graph {
                 stringBuffer.append("\n");
             }
             fileReader.close();
-//            System.out.println("Contents of file:");
-//            System.out.println(stringBuffer.toString());
 
         } catch (IOException e) {
             System.out.println("Wrong filename");
@@ -49,14 +47,16 @@ public class Graph {
     {
         g = new HashMap();
         clusterInfo = new HashMap();
-
+/* Followed the example provided here - http://www.avajava.com/tutorials/lessons/how-do-i-read-a-string-from-a-file-line-by-line.html */
         StringBuffer stringBuffer = readFile(fileName);
         String toString = stringBuffer.toString();
+/* Followed the example provided here - http://stackoverflow.com/questions/454908/split-java-string-by-new-line */
         String edges[] = toString.split("\\r?\\n");
 
         for (int i=1; i<edges.length; i++)
         {
             String cur = edges[i];
+/* Followed the example provided here - http://stackoverflow.com/questions/1635764/string-parsing-in-java-with-delimeter-tab-t-using-split */
             String vals[] = cur.split("\\t");
 
 
@@ -95,15 +95,13 @@ public class Graph {
                     g.put(fromNode, outEdges);
 
         }
-//        System.out.println("Number of vertices = " + g.keySet().size());
-//        System.out.println("Number of edges = " + (edges.length-1));
-//
-//        prettyPrint();
-
     }
 
     public void prettyPrint()
     {
+/* Followed the example provided here - http://stackoverflow.com/questions/1066589/iterate-through-a-hashmap */
+/* Followed the example provided here - https://www.tutorialspoint.com/java/java_using_iterator.htm */
+
         // Get a set of the entries
         Set set = g.entrySet();
 

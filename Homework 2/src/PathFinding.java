@@ -4,11 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.instrument.Instrumentation;
 import java.util.*;
 
 /**
  * Created by anubhabmajumdar on 3/4/17.
+ * Read a lot of blog post to use priorityQueue in the program. They are referenced below :
+ * http://www.journaldev.com/1642/java-priority-queue-priorityqueue-example
+ * http://www.programcreek.com/2009/02/using-the-priorityqueue-class-example/
+ * http://www.javatpoint.com/java-priorityqueue
+ * https://www.tutorialspoint.com/java/util/java_util_priorityqueue.htm
+ * Referenced the pathfinding algorithms from class notes
  */
 
 public class PathFinding {
@@ -16,9 +21,9 @@ public class PathFinding {
     PApplet pApplet;
     float cost;
     int fill;
-    private static Instrumentation instrumentation;
-    long nodeSize;
+    int maxUnvisitedNodeList;
 
+/* Followed the example provided here - http://www.programcreek.com/2009/02/using-the-priorityqueue-class-example/ */
     public static Comparator<Node> idComparatorDijkstra = new Comparator<Node>(){
 
         @Override
@@ -28,6 +33,7 @@ public class PathFinding {
 
     };
 
+/* Followed the example provided here - http://www.programcreek.com/2009/02/using-the-priorityqueue-class-example/ */
     public static Comparator<Node> idComparatorAStar = new Comparator<Node>(){
 
         @Override
@@ -46,6 +52,8 @@ public class PathFinding {
 
     public ArrayList<Edge> dijkstra(Graph worldGraph, int start, int target)
     {
+        maxUnvisitedNodeList = 0;
+        fill = 0;
         HashMap graph = worldGraph.g;
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorDijkstra);
         HashMap visitedNodes = new HashMap();
@@ -53,7 +61,6 @@ public class PathFinding {
         int nodeName = start;
         float csf = 0;
         ArrayList<Edge> edges = new ArrayList<Edge>();
-        //nodeSize = instrumentation.getObjectSize(new Node(0, edges, 0));
 
         unvisitedNodes.add(new Node(nodeName, edges, 0));
 
@@ -61,12 +68,6 @@ public class PathFinding {
 
         while (!unvisitedNodes.isEmpty())
         {
-
-//            System.out.print("Unvisited nodes = ");
-//            Object n[] =  unvisitedNodes.toArray();
-//            for (int i=0;i<unvisitedNodes.size();i++)
-//                System.out.print(((Node)n[i]).getNodeName() + ", ");
-//            System.out.println();
 
             curNode = unvisitedNodes.poll();
 
@@ -121,12 +122,13 @@ public class PathFinding {
 //                System.out.println();
 
             }
+            if (unvisitedNodes.size()>maxUnvisitedNodeList)
+                maxUnvisitedNodeList = unvisitedNodes.size();
         }
 
 
         if ((curNode == null) || (curNode.getNodeName()!=target))
         {
-            //printStat(visitedNodes.keySet().size(), -1);
             cost = -1;
             fill = visitedNodes.keySet().size();
             return null;
@@ -139,15 +141,16 @@ public class PathFinding {
                 cost += curNode.getEdges().get(i).getWeight();
             }
             fill = visitedNodes.keySet().size();
-            //printStat(visitedNodes.keySet().size(), cost);
             return curNode.getEdges();
         }
 
-    }   // End of dijkstra
+    }   // End of dijkstra's algorithm
 
 
     public ArrayList<Edge> aStar(Graph worldGraph, int start, int target, String heuristicName, String graphName)
     {
+        maxUnvisitedNodeList = 0;
+        fill = 0;
         HashMap graph = worldGraph.g;
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorAStar);
         HashMap visitedNodes = new HashMap();
@@ -156,7 +159,6 @@ public class PathFinding {
         int nodeName = start;
         float csf = 0;
         ArrayList<Edge> edges = new ArrayList<Edge>();
-        //nodeSize = instrumentation.getObjectSize((new Node(0, edges, 0)));
 
         Node curNode = new Node(nodeName, edges, csf);
 
@@ -169,13 +171,6 @@ public class PathFinding {
 
         while (!unvisitedNodes.isEmpty())
         {
-
-//            System.out.print("Unvisited nodes = ");
-//            Object n[] =  unvisitedNodes.toArray();
-//            for (int i=0;i<unvisitedNodes.size();i++)
-//                System.out.print(((Node)n[i]).getNodeName() + "( " + ((Node)n[i]).getCsf() + ", " + ((Node)n[i]).getEtc() + " )" + " , ");
-//            System.out.println();
-
             curNode = unvisitedNodes.poll();
 
             if (curNode.getNodeName() == target)
@@ -245,6 +240,8 @@ public class PathFinding {
 //                System.out.println();
 
             }
+            if (unvisitedNodes.size()>maxUnvisitedNodeList)
+                maxUnvisitedNodeList = unvisitedNodes.size();
         }
 
 
@@ -266,13 +263,7 @@ public class PathFinding {
             //printStat(visitedNodes.keySet().size(), cost);
             return curNode.getEdges();
         }
-
-
-
-
-
-
-    } // End of aStar
+    } // End of aStar algorithm
 
     public void prettyPrintPath(ArrayList<Edge> edges)
     {
@@ -387,14 +378,6 @@ public class PathFinding {
                     clusterDist[i-1][j-1] = Integer.parseInt(vals[j]);
                 }
             }
-//            for (int i=0;i<edges.length-1;i++)
-//            {
-//                for (int j=0;j<edges.length-1;j++)
-//                {
-//                    System.out.print(clusterDist[i][j]+"\t");
-//                }
-//                System.out.println();
-//            }
 
             return clusterDist;
 
@@ -402,6 +385,7 @@ public class PathFinding {
 
         public StringBuffer readFile(String fileName)
         {
+            /* Followed the example provided here - http://www.avajava.com/tutorials/lessons/how-do-i-read-a-string-from-a-file-line-by-line.html */
             StringBuffer stringBuffer = new StringBuffer();
 
             try {
@@ -414,8 +398,6 @@ public class PathFinding {
                     stringBuffer.append("\n");
                 }
                 fileReader.close();
-//            System.out.println("Contents of file:");
-//            System.out.println(stringBuffer.toString());
 
             } catch (IOException e) {
                 System.out.println("Wrong filename");

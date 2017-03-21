@@ -7,6 +7,7 @@ import java.io.*;
 
 /**
  * Created by anubhabmajumdar on 3/18/17.
+ * Followed the tutorial for learning and reference - https://py.processing.org/tutorials/pixels/
  */
 public class IndoorPathfinding extends PApplet {
 
@@ -125,12 +126,15 @@ public class IndoorPathfinding extends PApplet {
 
         character.update(1);
 
-        //drawPath(path);
+        drawPath(path);
 
     }
 
     public void prettyPrintGrid(Graph graph)
     {
+/* Followed the example provided here - http://stackoverflow.com/questions/1066589/iterate-through-a-hashmap */
+/* Followed the example provided here - https://www.tutorialspoint.com/java/java_using_iterator.htm */
+
         HashMap g = graph.g;
         // Get a set of the entries
         Set set = g.entrySet();
@@ -156,12 +160,7 @@ public class IndoorPathfinding extends PApplet {
 
 
             }
-
-            //System.out.println(" ]");
-
         }
-        //System.out.println();
-
     }
 
     public void drawPath(ArrayList<PVector> path)
@@ -229,8 +228,6 @@ public class IndoorPathfinding extends PApplet {
             println(str);
             for (int j=0; j<edges.size(); j++)
             {
-                //edges.get(j).prettyPrint();
-//                            System.out.print("  ");
                 str = str + "(" + edges.get(j).fromNode + ", " + edges.get(j).toNode + ", " + edges.get(j).weight + ")  ";
                 print(str);
             }
@@ -242,6 +239,7 @@ public class IndoorPathfinding extends PApplet {
 
     public Graph getRoomGraph(int tileSize) throws IOException
     {
+        /* Followed documentation here - https://processing.org/reference/loadPixels_.html */
         loadPixels();
         for (int i=0;i<width;i+=tileSize){
             for (int j=0;j<height;j+=tileSize)
@@ -309,15 +307,12 @@ public class IndoorPathfinding extends PApplet {
 
     public class Tile
     {
+        /* Followed the tutorial for learning and reference - https://py.processing.org/tutorials/pixels/ */
         int tileX, tileY, tileNumber;
         Boolean obstacle; // true means the tile is an obstacle
 
         public Tile(int x, int y, int tileSize)
         {
-//            int tileX = (int) Math.floor(x/tileSize);
-//            int tileY = (int) Math.floor(y/tileSize);
-//
-//            this.tileNumber = tileX + ((int) width/tileSize)*tileY;
             this.tileNumber = computeTileNumber(x, y, tileSize);
 
             obstacle = false;
@@ -337,6 +332,8 @@ public class IndoorPathfinding extends PApplet {
 
         public int computeTileNumber(int x, int y, int tileSize)
         {
+            /* Followed the tutorial for learning and reference - https://py.processing.org/tutorials/pixels/ */
+
             this.tileX = (int) Math.floor(x/tileSize);
             this.tileY = (int) Math.floor(y/tileSize);
 

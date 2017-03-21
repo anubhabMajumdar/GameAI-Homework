@@ -1,5 +1,3 @@
-import controlP5.ControlEvent;
-import controlP5.ControlP5;
 import controlP5.*;
 import processing.core.PApplet;
 import java.util.ArrayList;
@@ -8,6 +6,9 @@ import java.util.Objects;
 
 /**
  * Created by anubhabmajumdar on 3/4/17.
+ * Used freely available library "controlP5" for the GUI - http://www.sojamo.de/libraries/controlP5/#about
+ * Followed examples in the controlP5 documentation while developing the GUI - http://www.sojamo.de/libraries/controlP5/#examples
+ * Also followed this helpful blog post about controlP5 usage - http://www.kasperkamperman.com/blog/processing-code/controlp5-library-example1/
  */
 public class DriverClass extends PApplet {
 
@@ -36,8 +37,6 @@ public class DriverClass extends PApplet {
 
     public void setup()
     {
-        smooth();
-
         controlP5 = new ControlP5(this);
 
         algorithm = controlP5.addDropdownList("algorithm")
@@ -88,10 +87,6 @@ public class DriverClass extends PApplet {
                 .setValue(0)
         ;
 
-//        myTextfield = controlP5.addTextfield("Number of nodes expanded",100,160,200,20);
-//        myTextfield.setFocus(true);
-//        cost = controlP5.addTextfield("Total cost",250,350,200,20);
-//        fill = controlP5.addTextfield("Number of nodes expanded",250,400,200,20);
 
         cost = controlP5.addTextarea("Total cost" ).setPosition(250, 350).setSize(200, 20)
                 .setFont(createFont("arial",12))
@@ -118,19 +113,7 @@ public class DriverClass extends PApplet {
                 .setText("Path")
         ;
 
-//        controlP5.addConsole(cost);
-//        controlP5.addConsole(fill);
-
-        //newG = new Graph(this);
-//        newG.makeGraph("world_graph.txt");
-////        newG.makeGraph("cit-HepPh.txt");
         PathFinding pathFinding = new PathFinding(this);
-//        ArrayList<Edge> edges = pathFinding.dijkstra(newG.g, 13,12);
-////        ArrayList<Edge> edges = pathFinding.dijkstra(newG.g, 112008,9406205);
-//        if (edges == null)
-//            System.out.println("No path exists");
-//        else
-//            pathFinding.prettyPrintPath(edges);
 
     }
 
@@ -143,8 +126,6 @@ public class DriverClass extends PApplet {
 
         if(theEvent.isController()) {
 
-//            print("control event from : "+theEvent.getController().getName());
-//            println(", value : "+theEvent.getController().getValue());
 
             if(theEvent.getController().getName().equals("Go")) {
 
@@ -157,11 +138,7 @@ public class DriverClass extends PApplet {
                     {
                         edges = pathFinding.aStar(newG, start, stop, heuristicName, graph);
 
-                        //edges = pathFinding.aStar(newG.g, start, stop, "distanceHeuristic");
-                        //edges = pathFinding.aStar(newG.g, start, stop, "clusterHeuristic");
                     }
-
-                    //System.out.println("A*");//pathFinding.dijkstra(newG.g, start, stop);
 
 
                     cost.setText(Float.toString(pathFinding.cost));
@@ -173,8 +150,6 @@ public class DriverClass extends PApplet {
                                 "\n Path --> ";
                         for (int j=0; j<edges.size(); j++)
                         {
-                            //edges.get(j).prettyPrint();
-//                            System.out.print("  ");
                             str = str + "(" + edges.get(j).fromNode + ", " + edges.get(j).toNode + ", " + edges.get(j).weight + ")  ";
                         }
                         path.setText(str);
@@ -215,7 +190,6 @@ public class DriverClass extends PApplet {
                 else
                     graph = "cit-HepPh.txt";
 
-                //System.out.println(graph);
                 List<Integer> l;
 
                 startNode.remove();
@@ -252,13 +226,11 @@ public class DriverClass extends PApplet {
             {
                 List<Integer> l = new ArrayList<Integer>(newG.g.keySet());
                 start = l.get((int)theEvent.getController().getValue());
-                //System.out.println(l.get((int)theEvent.getController().getValue()));
             }
             else if (theEvent.getController().getName().equals("targetNode"))
             {
                 List<Integer> l = new ArrayList<Integer>(newG.g.keySet());
                 stop = l.get((int)theEvent.getController().getValue());
-                //System.out.println(l.get((int)theEvent.getController().getValue()));
             }
 
             else if (theEvent.getController().getName().equals("heuristic")) {
@@ -270,24 +242,21 @@ public class DriverClass extends PApplet {
             }
         }
         else if(theEvent.isGroup()) {
-            // check if the Event was triggered from a ControlGroup
             System.out.println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
         }
 
     }
 
 
-
+/* Standard GUI customization code from ControlP5 documentation - http://www.sojamo.de/libraries/controlP5/examples/controllers/ControlP5dropdownList/ControlP5dropdownList.pde */
     public void customize(DropdownList ddl) {
         // a convenience function to customize a DropdownList
         ddl.setBackgroundColor(color(190));
         ddl.setItemHeight(20);
         ddl.setBarHeight(15);
-//        ddl.setCaptionLabel("dropdown");
         ddl.getCaptionLabel().getStyle().marginTop = 3;
         ddl.getCaptionLabel().getStyle().marginLeft = 3;
         ddl.getValueLabel().getStyle().marginTop = 3;
-        //ddl.scroll(0);
         ddl.setColorBackground(color(60));
         ddl.setColorActive(color(255, 128));
     }
