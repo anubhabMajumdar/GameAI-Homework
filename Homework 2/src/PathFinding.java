@@ -317,7 +317,7 @@ public class PathFinding {
             if (heuristicName.equals("distanceHeuristic"))
                 return distanceHeuristic(n);
             else if ((heuristicName.equals("clusterHeuristic")))
-                return cluterHeuristic(n);
+                return clusterHeuristic(n);
 
             return distanceHeuristic(n);
 
@@ -329,7 +329,7 @@ public class PathFinding {
 
         }
 
-        private float cluterHeuristic(Node n)
+        private float clusterHeuristic(Node n)
         {
             if (graphName.equals("cit-HepPh.txt"))
             {
@@ -354,7 +354,7 @@ public class PathFinding {
 
         private float cluterHeuristicWorldGraph(Node n, int[][] clusterDist)
         {
-            //System.out.println("World Graph");
+//            System.out.println(n.getNodeName());
             int nodeCluster = (int) worldGraph.clusterInfo.get(n.getNodeName());
             int targetCluster = (int) worldGraph.clusterInfo.get(target);
 
