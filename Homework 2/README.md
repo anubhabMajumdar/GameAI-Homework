@@ -16,3 +16,5 @@ I have used the freely available processing library called "controlP5" for the G
 
 To test the indoor environment pathfollowing, please run IndoorPathfinding.java. Click anywhere in the white pixel region to have the character travel there.
 
+Please check the Indoor pathfollowing in action here - https://www.youtube.com/watch?v=0nXZMcw15nM&feature=youtu.be
+
