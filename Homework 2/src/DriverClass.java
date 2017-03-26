@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * Created by anubhabmajumdar on 3/4/17.
- * Used freely available library "controlP5" for the GUI - http://www.sojamo.de/libraries/controlP5/#about
+ * Used freely available library "controlP5", developed by Andreas Schlegel, 2015, for the GUI - http://www.sojamo.de/libraries/controlP5/#about
  * Followed examples in the controlP5 documentation while developing the GUI - http://www.sojamo.de/libraries/controlP5/#examples
  * Also followed this helpful blog post about controlP5 usage - http://www.kasperkamperman.com/blog/processing-code/controlp5-library-example1/
  */
@@ -124,6 +124,7 @@ public class DriverClass extends PApplet {
     }
 
     public void controlEvent(ControlEvent theEvent) {
+/* Followed examples in the controlP5 documentation while developing the GUI - http://www.sojamo.de/libraries/controlP5/#examples */
 
         if(theEvent.isController()) {
 
@@ -247,9 +248,10 @@ public class DriverClass extends PApplet {
         }
 
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
 
-/* Standard GUI customization code from ControlP5 documentation - http://www.sojamo.de/libraries/controlP5/examples/controllers/ControlP5dropdownList/ControlP5dropdownList.pde */
+    /* Standard GUI customization code from ControlP5 documentation - http://www.sojamo.de/libraries/controlP5/examples/controllers/ControlP5dropdownList/ControlP5dropdownList.pde */
     public void customize(DropdownList ddl) {
         // a convenience function to customize a DropdownList
         ddl.setBackgroundColor(color(190));
