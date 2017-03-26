@@ -23,7 +23,6 @@ public class CustomShape {
         pImage = pApplet.loadImage(imageName);
         width = w;
         height = h;
-        //orientation = 0;
         arrayList = new ArrayList();
         breadCrumbs = new ArrayList<PVector>();
     }

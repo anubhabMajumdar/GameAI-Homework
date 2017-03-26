@@ -68,6 +68,7 @@ public class Performance {
         double[] results = {avg_dijkstra, avg_astar};
         return results;
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
     public double[] measureFill(Graph graph, ArrayList list, String heuristicName, String graphName)
     {
@@ -173,6 +174,7 @@ public class Performance {
         double[] results = {avg_astar_dist, avg_astar_cluster};
         return results;
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
     public double[] measureFillHeuristic(Graph graph, ArrayList list, String graphName)
     {
@@ -255,7 +257,7 @@ public class Performance {
     public static void main(String args[])
     {
         Performance performance = new Performance();
-        performance.setN(1000);
+        performance.setN(100);
         //performance.measurePerformance();
         performance.measurePerformanceHeuristic();
     }

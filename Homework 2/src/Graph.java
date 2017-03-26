@@ -42,6 +42,7 @@ public class Graph {
 
         return stringBuffer;
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
     public void makeGraph(String fileName)
     {
@@ -50,8 +51,11 @@ public class Graph {
 /* Followed the example provided here - http://www.avajava.com/tutorials/lessons/how-do-i-read-a-string-from-a-file-line-by-line.html */
         StringBuffer stringBuffer = readFile(fileName);
         String toString = stringBuffer.toString();
+/* -------------------------------------------------------------------------------------------------------------------- */
+
 /* Followed the example provided here - http://stackoverflow.com/questions/454908/split-java-string-by-new-line */
         String edges[] = toString.split("\\r?\\n");
+/* -------------------------------------------------------------------------------------------------------------------- */
 
         for (int i=1; i<edges.length; i++)
         {
@@ -59,6 +63,7 @@ public class Graph {
 /* Followed the example provided here - http://stackoverflow.com/questions/1635764/string-parsing-in-java-with-delimeter-tab-t-using-split */
             String vals[] = cur.split("\\t");
 
+/* -------------------------------------------------------------------------------------------------------------------- */
 
             int fromNode = Integer.parseInt(vals[0]);
             int toNode = Integer.parseInt(vals[1]);
@@ -127,6 +132,7 @@ public class Graph {
         System.out.println();
 
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
 
 }

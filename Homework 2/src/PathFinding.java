@@ -32,6 +32,7 @@ public class PathFinding {
         }
 
     };
+/* -------------------------------------------------------------------------------------------------------------------- */
 
 /* Followed the example provided here - http://www.programcreek.com/2009/02/using-the-priorityqueue-class-example/ */
     public static Comparator<Node> idComparatorAStar = new Comparator<Node>(){
@@ -42,6 +43,7 @@ public class PathFinding {
         }
 
     };
+/* -------------------------------------------------------------------------------------------------------------------- */
 
     public PathFinding(PApplet p)
     {
@@ -57,6 +59,8 @@ public class PathFinding {
         HashMap graph = worldGraph.g;
 /* Followed the example provided here - http://www.programcreek.com/2009/02/using-the-priorityqueue-class-example/ */
         PriorityQueue <Node>  unvisitedNodes = new PriorityQueue <Node> (idComparatorDijkstra);
+/* -------------------------------------------------------------------------------------------------------------------- */
+
         HashMap visitedNodes = new HashMap();
 
         int nodeName = start;
@@ -363,6 +367,8 @@ public class PathFinding {
 
         private int[][] getClusterLookUp(String fileName)
         {
+            /* Followed the example provided here - http://www.avajava.com/tutorials/lessons/how-do-i-read-a-string-from-a-file-line-by-line.html */
+
             StringBuffer stringBuffer = readFile(fileName);
             String toString = stringBuffer.toString();
             String edges[] = toString.split("\\r?\\n");
@@ -383,6 +389,7 @@ public class PathFinding {
             return clusterDist;
 
         }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
         public StringBuffer readFile(String fileName)
         {
@@ -408,6 +415,7 @@ public class PathFinding {
             return stringBuffer;
         }
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
     public class Node
     {

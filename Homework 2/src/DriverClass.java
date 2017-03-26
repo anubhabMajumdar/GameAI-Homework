@@ -37,6 +37,7 @@ public class DriverClass extends PApplet {
 
     public void setup()
     {
+        /* Followed examples in the controlP5 documentation while developing the GUI - http://www.sojamo.de/libraries/controlP5/#examples */
         controlP5 = new ControlP5(this);
 
         algorithm = controlP5.addDropdownList("algorithm")
@@ -112,7 +113,7 @@ public class DriverClass extends PApplet {
                 .setColorForeground(color(255,100))
                 .setText("Path")
         ;
-
+        /* -------------------------------------------------------------------------------------------------------------------- */
         PathFinding pathFinding = new PathFinding(this);
 
     }
@@ -260,6 +261,7 @@ public class DriverClass extends PApplet {
         ddl.setColorBackground(color(60));
         ddl.setColorActive(color(255, 128));
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
 
     public static void main(String[] args)

@@ -162,6 +162,7 @@ public class IndoorPathfinding extends PApplet {
             }
         }
     }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
     public void drawPath(ArrayList<PVector> path)
     {
@@ -241,6 +242,7 @@ public class IndoorPathfinding extends PApplet {
     {
         /* Followed documentation here - https://processing.org/reference/loadPixels_.html */
         loadPixels();
+
         for (int i=0;i<width;i+=tileSize){
             for (int j=0;j<height;j+=tileSize)
             {
@@ -249,6 +251,7 @@ public class IndoorPathfinding extends PApplet {
             }
         }
         updatePixels();
+/* -------------------------------------------------------------------------------------------------------------------- */
 
         // create graph file
         String fileName = "roomGraph.txt";
@@ -329,6 +332,7 @@ public class IndoorPathfinding extends PApplet {
                 }
             }
         }
+/* -------------------------------------------------------------------------------------------------------------------- */
 
         public int computeTileNumber(int x, int y, int tileSize)
         {
@@ -338,6 +342,8 @@ public class IndoorPathfinding extends PApplet {
             this.tileY = (int) Math.floor(y/tileSize);
 
             int tileNumber = tileX + ((int) width/tileSize)*tileY;
+/* -------------------------------------------------------------------------------------------------------------------- */
+
             return  tileNumber;
         }
     }

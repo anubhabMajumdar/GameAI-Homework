@@ -27,8 +27,6 @@ public class MovementAlgorithms {
         arrive_ROD = 50;
         arrive_timeToTargetAcc = 10;
 
-        predictTime = 10;
-
     }
 
     public void arrive(SteeringClass character, PVector targetPos)
