@@ -28,7 +28,7 @@ public class SteeringClass {
         angular_acc = 0;
 
         maxRot = 0.05f;
-        maxSpeed = 2;
+        maxSpeed = 1;
         maxAcc = 0.05f;
         maxVel = new PVector(1,1);
         maxAngAcc = 0.1f;

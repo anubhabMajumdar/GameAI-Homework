@@ -31,7 +31,7 @@ public class IndoorPathfinding extends PApplet {
     {
         size(500, 300);
 
-        tileSize = 10;
+        tileSize = 20;
         tileCountWidth = width/tileSize;
         tileCountHeight = height/tileSize;
 
@@ -39,8 +39,8 @@ public class IndoorPathfinding extends PApplet {
 
         pImage = loadImage("room.jpg");
 
-        w = 10;
-        h = 10;
+        w = 20;
+        h = 20;
 
         pathFinding = new PathFinding(this);
         character = new SteeringClass(this);
@@ -71,7 +71,7 @@ public class IndoorPathfinding extends PApplet {
             println("Cannot generate room graph");
         }
 
-        customShape = new CustomShape(this, "customShape.png", w, h);
+        customShape = new CustomShape(this, "legoBatman.png", w, h);
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
 
     }
@@ -122,11 +122,11 @@ public class IndoorPathfinding extends PApplet {
 
         customShape.setOrientation(character.getOrientation());
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
-        customShape.drawBreadcrumbs();
+        //customShape.drawBreadcrumbs();
 
         character.update(1);
 
-        drawPath(path);
+        //drawPath(path);
 
     }
 

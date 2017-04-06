@@ -23,9 +23,6 @@ public class MovementAlgorithms {
         arrive_ROS = 10;
         arrive_ROD = 50;
         arrive_timeToTargetAcc = 10;
-
-
-
     }
 
     public void seek(SteeringClass character, PVector targetPos)
