@@ -16,15 +16,29 @@ public class CustomShape {
     float orientation;
     ArrayList arrayList;
     ArrayList<PVector> breadCrumbs;
+    String imageName;
 
     CustomShape(PApplet p, String imageName, float w, float h)
     {
         pApplet = p;
+        this.imageName = imageName;
         pImage = pApplet.loadImage(imageName);
         width = w;
         height = h;
         arrayList = new ArrayList();
         breadCrumbs = new ArrayList<PVector>();
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public void reloadPImage() {
+        this.pImage = pApplet.loadImage(this.imageName);;
     }
 
     public void setOrientation(float o)

@@ -2,8 +2,6 @@ import processing.core.*;
 
 /**
  * Created by anubhabmajumdar on 1/30/17.
- * Referenced the book "AI for games, 2nd edition" by Ian Millington and John Funge
- * Referenced the algorithms from class notes
  */
 
 public class SteeringClass {
@@ -29,11 +27,11 @@ public class SteeringClass {
         acceleration = new PVector(0,0);
         angular_acc = 0;
 
-        maxRot = 0.3f;
-        maxSpeed = 1;
-        maxAcc = 0.001f;
+        maxRot = 0.05f;
+        maxSpeed = 2;
+        maxAcc = 0.05f;
         maxVel = new PVector(1,1);
-        maxAngAcc = 0.01f;
+        maxAngAcc = 0.1f;
     }
 
     public void setPosition(PVector pos)

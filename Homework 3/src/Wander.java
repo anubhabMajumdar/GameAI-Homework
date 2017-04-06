@@ -27,7 +27,7 @@ public class Wander {
         float randomNumber = pApplet.random(-1,1);
 //        pApplet.println(randomNumber);
 //        if (pApplet.random(0,1)>0.7)
-            randomNumber = randomNumber * -1;
+        randomNumber = randomNumber * -1;
 
         wanderOrientation = wanderOrientation + randomNumber * wanderRate;
         float targetOrientation = character.getOrientation() + wanderOrientation;

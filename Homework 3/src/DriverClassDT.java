@@ -18,7 +18,7 @@ public class DriverClassDT extends PApplet {
     NodeInterface root;
 
     public void settings(){
-        size(1200,800);
+        size(600,400);
     }
 
     public void setup(){
@@ -34,11 +34,11 @@ public class DriverClassDT extends PApplet {
         s.setOrientation(radians(0));
         //s.setAcceleration(new PVector(0.2f, 0.1f));
 
-//        target = s.getPosition();
+        target = s.getPosition();
 
-//        movementAlgorithms = new MovementAlgorithms(this);
+        movementAlgorithms = new MovementAlgorithms(this);
 
-        decisionTree = new DecisionTree(this);
+        decisionTree = new DecisionTree(this, shape);
         root = decisionTree.makeTree();
 
     }
@@ -47,7 +47,7 @@ public class DriverClassDT extends PApplet {
     {
         background(255);
 
-        if (millis()>startTime+300)
+        if (millis()>startTime+1000)
         {
             startTime = millis();
 //            target = wander.wanderAlgo(s);
@@ -63,13 +63,12 @@ public class DriverClassDT extends PApplet {
         shape.setOrientation(s.getOrientation());
         shape.drawCustomShape(s.getPosition().x,s.getPosition().y);
 
-        //shape.drawBreadcrumbs();
+//        shape.drawBreadcrumbs();
 
         handleCollision();
         s.update(1);
 
-//        println(s.getRotation());
-//        println(s.getAcceleration().mag());
+//        println(s.getPosition());
 
     }
 

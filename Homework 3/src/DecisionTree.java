@@ -7,42 +7,42 @@ import processing.core.PVector;
 public class DecisionTree  {
 
     PApplet pApplet;
+    MovementAlgorithms movementAlgorithms;
+    CustomShape customShape;
 
-    public DecisionTree(PApplet pApplet) {
+    public DecisionTree(PApplet pApplet, CustomShape customShape) {
        this.pApplet = pApplet;
+        movementAlgorithms = new MovementAlgorithms(pApplet);
+        this.customShape = customShape;
     }
 
     public NodeInterface makeTree()
     {
-        //get left leaf 1
-        NodeInterface leftLeaf1 = new highSpeedRotLeaf(new InternalNode(), null, null);
+        // get leaves
+        NodeInterface leaf1 = new ArriveCenterLeaf(new InternalNode(), null, null);
+        NodeInterface leaf2 = new setEverythingToZeroLeaf(new InternalNode(), null, null);
+        NodeInterface leaf3 = new highSpeedRotLeaf(new InternalNode(), null, null);
+        NodeInterface leaf4 = new wanderLeaf(new InternalNode(), null, null);
 
-        // get right leaf 1
-        NodeInterface rightLeaf1 = new setEverythingToZeroLeaf(new InternalNode(), null, null);
-
-        NodeInterface internalNode1 = new AngularAccCheckNode(new InternalNode(), leftLeaf1, rightLeaf1);
-
-        // get right leaf 2
-        NodeInterface rightLeaf2 = new wanderLeaf(new InternalNode(), null, null);
-
-        // get root node
-        NodeInterface root = new AccCheckNode(new InternalNode(), internalNode1, rightLeaf2);
+        // get internal nodes
+        NodeInterface internalNode1 = new MaxRotationCheckNode(new InternalNode(), leaf2, leaf3);
+        NodeInterface internalNode2 = new SpeedCheckNode(new InternalNode(), internalNode1, leaf4);
+        NodeInterface root = new NearWallCheckNode(new InternalNode(), leaf1, internalNode2);
 
         return root;
-
     }
 
     public void traverseDT(NodeInterface root, SteeringClass steeringClass)
     {
         boolean flag;
-
-        while (root != null)
+        NodeInterface temp = root;
+        while (temp != null)
         {
-            flag = root.evaluate(steeringClass);
+            flag = temp.evaluate(steeringClass);
             if (flag)
-                root = ((InternalNodeInterface)root).getLeft();
+                temp = ((InternalNodeInterface)temp).getLeft();
             else
-                root = ((InternalNodeInterface)root).getRight();
+                temp = ((InternalNodeInterface)temp).getRight();
         }
     }
 
@@ -92,34 +92,78 @@ public class DecisionTree  {
         }
     }
 
-    public class AccCheckNode extends InternalNodeInterface
+    public class SpeedCheckNode extends InternalNodeInterface
     {
-        public AccCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+        public SpeedCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);
         }
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            if (steeringClass.getAcceleration().mag() > 0.15)
+            if (steeringClass.getVelocity().mag() >= steeringClass.maxSpeed)
                 return true;    // Accelaration > threshold
             else
                 return false;
         }
     }
 
-    public class AngularAccCheckNode extends InternalNodeInterface
+    public class MaxRotationCheckNode extends InternalNodeInterface
     {
-        public AngularAccCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+        public MaxRotationCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);
         }
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            //pApplet.println(steeringClass.getAngularAcc());
-            if (Math.abs(steeringClass.getRotation()) <= 0.3)
+//            pApplet.println(steeringClass.getRotation());
+            if (Math.abs(steeringClass.getRotation()) >= steeringClass.maxRot)
                 return true;    // Accelaration > threshold
             else
                 return false;
+        }
+    }
+
+    public class NearWallCheckNode extends InternalNodeInterface
+    {
+        int thresh;
+
+        public NearWallCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+            thresh = 100;
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+            //pApplet.println(steeringClass.getAngularAcc());
+            float x = steeringClass.getPosition().x;
+            float y = steeringClass.getPosition().y;
+
+            if ((x<thresh) || (x>pApplet.width-thresh) || (y<thresh) || (y>pApplet.height-thresh))
+            {
+                movementAlgorithms.arrive(steeringClass, new PVector(pApplet.width/2, pApplet.height/2));
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    public class ArriveCenterLeaf extends InternalNodeInterface
+    {
+        public ArriveCenterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+            pApplet.println("In ArriveCenter\n");
+            //pApplet.println(steeringClass.getAngularAcc());
+            steeringClass.setVelocity(new PVector(0,0));
+            steeringClass.setAcceleration(new PVector(0,0));
+            steeringClass.setRotation(0);
+            steeringClass.setAngularAcc(0);
+            movementAlgorithms.arrive(steeringClass, new PVector(pApplet.width/2, pApplet.height/2));
+            return true;
         }
     }
 
@@ -156,13 +200,26 @@ public class DecisionTree  {
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In setEverythingToZeroLeaf\n");
+
 
             try
             {
+                pApplet.println("In setEverythingToZeroLeaf\n");
+//                steeringClass.setPosition(new PVector(pApplet.width/2, pApplet.height/2));
+                if (customShape.getImageName().equals("legoBatman.png"))
+                {
+                    customShape.setImageName("legoSuperman.png");
+                }
+                else
+                {
+                    customShape.setImageName("legoBatman.png");
+                }
+                customShape.reloadPImage();
                 steeringClass.setVelocity(new PVector(0,0));
                 steeringClass.setAcceleration(new PVector(0,0));
+                steeringClass.setRotation(0);
                 steeringClass.setAngularAcc(0);
+//                pApplet.println(steeringClass.getAngularAcc());
                 return true;
             }
             catch (Exception e)
@@ -183,10 +240,9 @@ public class DecisionTree  {
             pApplet.println("In wander\n");
             try
             {
+                //steeringClass.setAcceleration(new PVector(0.01f, 0.01f));
                 Wander wander = new Wander(pApplet);
                 PVector target = wander.wanderAlgo(steeringClass);
-
-                MovementAlgorithms movementAlgorithms = new MovementAlgorithms(pApplet);
 
                 movementAlgorithms.align(steeringClass, getOrientationFromVector(PVector.sub(target, steeringClass.getPosition())));
                 movementAlgorithms.arrive(steeringClass, target);
