@@ -14,8 +14,8 @@ public class Wander {
     {
         pApplet = p;
 
-        wanderOffset = 50;
-        wanderRadius = 50;
+        wanderOffset = 200;
+        wanderRadius = 300;
         wanderRate = pApplet.PI/3;
 
         movementAlgorithms = new MovementAlgorithms(pApplet);

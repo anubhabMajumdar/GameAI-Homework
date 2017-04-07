@@ -120,7 +120,7 @@ public class DriverClassDT extends PApplet {
 //
 //            //printPath(edges);
 //        }
-        if (millis()>startTime+1000)
+        if (millis()>startTime+300)
         {
             decisionTree.traverseDT(root, character);
             startTime = millis();

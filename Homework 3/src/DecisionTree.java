@@ -35,8 +35,8 @@ public class DecisionTree  {
         this.roomGraph = roomGraph;
         movementAlgorithms = new MovementAlgorithms(pApplet);
 
-        S1_x = pApplet.width/3;
-        S1_y = pApplet.height/3;
+        S1_x = pApplet.width/2;
+        S1_y = pApplet.height/2;
 
         R1_x = 50;
         R1_y = 50;
@@ -178,7 +178,7 @@ public class DecisionTree  {
             float x = steeringClass.getPosition().x;
             float y = steeringClass.getPosition().y;
 
-            if (x<pApplet.width/2)
+            if (x<=pApplet.width/2)
                 return true;
             else
                 return false;
