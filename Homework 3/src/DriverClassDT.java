@@ -30,9 +30,9 @@ public class DriverClassDT extends PApplet {
 
     public void settings()
     {
-        size(600, 300);
+        size(600, 400);
 
-        tileSize = 30;
+        tileSize = 20;
         tileCountWidth = width/tileSize;
         tileCountHeight = height/tileSize;
 
@@ -45,7 +45,7 @@ public class DriverClassDT extends PApplet {
 
         pathFinding = new PathFinding(this);
         character = new SteeringClass(this);
-        character.setPosition(new PVector(500, 200));
+        character.setPosition(new PVector(width-100, height-100));
         character.setOrientation(0);
         //character.setAcceleration(new PVector(0.1f, 0.1f));
 
@@ -82,6 +82,7 @@ public class DriverClassDT extends PApplet {
     public void draw()
     {
         image(pImage, -0, 0, width, height);
+        line(width/2, 0, width/2, height);
         filter(THRESHOLD,0.5f);
 
 //        for (int i=0;i<allTiles.size();i++)
@@ -130,7 +131,7 @@ public class DriverClassDT extends PApplet {
 
         customShape.setOrientation(character.getOrientation());
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
-        //customShape.drawBreadcrumbs();
+        customShape.drawBreadcrumbs();
 
         character.update(1);
 

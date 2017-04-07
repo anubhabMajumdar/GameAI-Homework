@@ -15,6 +15,9 @@ public class DecisionTree  {
     ArrayList<Tile> allTiles;
     Graph roomGraph;
 
+    int S1_x, S1_y;
+    int R1_x, R1_y;
+
     public DecisionTree(PApplet pApplet, CustomShape customShape) {
        this.pApplet = pApplet;
         movementAlgorithms = new MovementAlgorithms(pApplet);
@@ -32,20 +35,42 @@ public class DecisionTree  {
         this.roomGraph = roomGraph;
         movementAlgorithms = new MovementAlgorithms(pApplet);
 
+        S1_x = pApplet.width/3;
+        S1_y = pApplet.height/3;
+
+        R1_x = 50;
+        R1_y = 50;
+
+
     }
 
     public NodeInterface makeTree()
     {
         // get leaves
         NodeInterface leaf1 = new wanderLeaf(new InternalNode(), null, null);
+
         NodeInterface leaf2 = new PathFollowingLeaf(new InternalNode(), null, null);
-        ((PathFollowingLeaf)leaf2).setX(50);
-        ((PathFollowingLeaf)leaf2).setY(50);
+        ((PathFollowingLeaf)leaf2).setX(S1_x);
+        ((PathFollowingLeaf)leaf2).setY(S1_y);
 
+        NodeInterface leaf3 = new PathFollowingLeaf(new InternalNode(), null, null);
+        ((PathFollowingLeaf)leaf3).setX(R1_x);
+        ((PathFollowingLeaf)leaf3).setY(R1_y);
 
+        NodeInterface leaf4 = new highSpeedRotLeaf(new InternalNode(), null, null);
+
+        NodeInterface leaf5 = new PathFollowingLeaf(new InternalNode(), null, null);
+        ((PathFollowingLeaf)leaf5).setX(500);
+        ((PathFollowingLeaf)leaf5).setY(300);
+
+        NodeInterface leaf6 = new ChangeCharacterLeaf(new InternalNode(), null, null);
 
         // get internal nodes
-        NodeInterface root = new NearWallCheckNode(new InternalNode(), leaf2, leaf1);
+        NodeInterface internalNode1 = new NearWallCheckNode(new InternalNode(), leaf2, leaf1);
+        NodeInterface internalNode2 = new OutsideRoomCheck(new InternalNode(), leaf3, internalNode1);
+        NodeInterface internalNode3 = new MaxRotationCheckNode(new InternalNode(), leaf5, leaf4);
+        NodeInterface root = new InsideRoomCheck(new InternalNode(), internalNode3, internalNode2);
+        //NodeInterface root = new SpeedCheckNode(new InternalNode(), leaf6, internalNode4);
 
         return root;
     }
@@ -141,6 +166,48 @@ public class DecisionTree  {
         }
     }
 
+    public class OutsideRoomCheck extends InternalNodeInterface
+    {
+        public OutsideRoomCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            float x = steeringClass.getPosition().x;
+            float y = steeringClass.getPosition().y;
+
+            if (x<pApplet.width/2)
+                return true;
+            else
+                return false;
+        }
+    }
+
+    public class InsideRoomCheck extends InternalNodeInterface
+    {
+        public InsideRoomCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            float x = steeringClass.getPosition().x;
+            float y = steeringClass.getPosition().y;
+
+            int room_width = 190;
+            int room_height = 190;
+
+
+            if ((x<room_width) && (y<room_height))
+                return true;
+            else
+                return false;
+        }
+    }
+
     public class NearWallCheckNode extends InternalNodeInterface
     {
         int thresh;
@@ -152,7 +219,7 @@ public class DecisionTree  {
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In NearWallCheckNode");
+            //pApplet.println("In NearWallCheckNode");
             //pApplet.println(steeringClass.getAngularAcc());
             float x = steeringClass.getPosition().x;
             float y = steeringClass.getPosition().y;
@@ -172,6 +239,7 @@ public class DecisionTree  {
 
         public PathFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);
+            //pApplet.registerMethod("Draw", this);
         }
 
         public void setX(int x) {
@@ -187,6 +255,9 @@ public class DecisionTree  {
             pApplet.println("In PathFollowingLeaf\n");
             ArrayList<PVector> path = pathFindingAlgo(X, Y, steeringClass);
             PathFollowingAlgo(steeringClass, path);
+            //AnimatePathFollow animatePathFollow = new AnimatePathFollow(path, steeringClass, customShape);
+
+            //pApplet.unregisterMethod("draw", animatePathFollow);
 
             return true;
         }
@@ -194,25 +265,23 @@ public class DecisionTree  {
         public void PathFollowingAlgo(SteeringClass character, ArrayList<PVector> path)
         {
             int lastIndex = 0;
-            int startTime = pApplet.millis();
 
-            while (lastIndex < path.size()-1)
-            {
-                drawPath(path);
-                //if (pApplet.millis()>startTime+1000)
-                {
+//            CustomShape c = new CustomShape(pApplet, "cuteMonster.jpeg", 30, 30);
+//            SteeringClass s = new SteeringClass(pApplet);
+//            s.setPosition(new PVector(200, 200));
+//            c.drawCustomShape(200, 200);
 
-                    lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
+            while (lastIndex < path.size()-1) {
 
-                    startTime = pApplet.millis();
+                //drawPath(path);
 
-                    customShape.setOrientation(character.getOrientation());
-                    customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
-                    //customShape.drawBreadcrumbs();
+                lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
 
-                    character.update(1);
-                }
+                customShape.setOrientation(character.getOrientation());
+                customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
+                //customShape.drawBreadcrumbs();
 
+                character.update(1);
             }
 
         }
@@ -305,27 +374,47 @@ public class DecisionTree  {
                 pApplet.line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
             }
         }
+
+//        public class AnimatePathFollow
+//        {
+//            /* Reference - https://groups.google.com/forum/#!topic/fadecandy/AMPRMHGqunE; Accessed on 04/06/2017 */
+//            /* Reference - http://www.abstractmachine.net/blog/registerdraw/; Accessed on 04/06/2017 */
+//
+//            ArrayList<PVector> path;
+//            SteeringClass character;
+//            CustomShape customShape;
+//
+//            int lastIndex;
+//
+//            public AnimatePathFollow(ArrayList<PVector> path, SteeringClass steeringClass, CustomShape customShape) {
+//                this.path = path;
+//                this.character = steeringClass;
+//                this.customShape = customShape;
+//                pApplet.registerMethod("draw", this);
+//                lastIndex = 0;
+//            }
+//
+//            public void draw()
+//            {
+//                lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
+//
+//                customShape.setOrientation(character.getOrientation());
+//                customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
+//                //customShape.drawBreadcrumbs();
+//
+//                character.update(1);
+//
+//                if (lastIndex==path.size()-1)
+//                    pApplet.unregisterMethod("draw", this);
+//
+//            }
+//            /* ------------------------------------------------------------------------------------------------------ */
+//        }
+
     }
 
 
-        public class ArriveCenterLeaf extends InternalNodeInterface
-    {
-        public ArriveCenterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
 
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In ArriveCenter\n");
-            //pApplet.println(steeringClass.getAngularAcc());
-            steeringClass.setVelocity(new PVector(0,0));
-            steeringClass.setAcceleration(new PVector(0,0));
-            steeringClass.setRotation(0);
-            steeringClass.setAngularAcc(0);
-            movementAlgorithms.arrive(steeringClass, new PVector(pApplet.width/2, pApplet.height/2));
-            return true;
-        }
-    }
 
     public class highSpeedRotLeaf extends InternalNodeInterface
     {
@@ -339,8 +428,8 @@ public class DecisionTree  {
 
             try
             {
-                //steeringClass.setVelocity(new PVector(0,0));
-                //steeringClass.setAcceleration(new PVector(0,0));
+                steeringClass.setVelocity(new PVector(0,0));
+                steeringClass.setAcceleration(new PVector(0,0));
                 steeringClass.setAngularAcc(0.001f);
                 //steeringClass.getAcceleration()
                 return true;
@@ -352,9 +441,9 @@ public class DecisionTree  {
         }
     }
 
-    public class setEverythingToZeroLeaf extends InternalNodeInterface
+    public class ChangeCharacterLeaf extends InternalNodeInterface
     {
-        public setEverythingToZeroLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+        public ChangeCharacterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);
         }
 
@@ -377,9 +466,7 @@ public class DecisionTree  {
                 customShape.reloadPImage();
                 steeringClass.setVelocity(new PVector(0,0));
                 steeringClass.setAcceleration(new PVector(0,0));
-                steeringClass.setRotation(0);
-                steeringClass.setAngularAcc(0);
-//                pApplet.println(steeringClass.getAngularAcc());
+
                 return true;
             }
             catch (Exception e)
@@ -400,7 +487,7 @@ public class DecisionTree  {
             pApplet.println("In wander\n");
             try
             {
-                //steeringClass.setAcceleration(new PVector(0.01f, 0.01f));
+                steeringClass.setAcceleration(new PVector(0.01f, 0.01f));
                 Wander wander = new Wander(pApplet);
                 PVector target = wander.wanderAlgo(steeringClass);
 
