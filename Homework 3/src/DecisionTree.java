@@ -14,15 +14,16 @@ public class DecisionTree  {
     int tileSize, tileCountWidth, tileCountHeight;
     ArrayList<Tile> allTiles;
     Graph roomGraph;
+    ArrayList<PVector> path;
 
     int S1_x, S1_y;
     int R1_x, R1_y;
 
-    public DecisionTree(PApplet pApplet, CustomShape customShape) {
-       this.pApplet = pApplet;
-        movementAlgorithms = new MovementAlgorithms(pApplet);
-        this.customShape = customShape;
-    }
+//    public DecisionTree(PApplet pApplet, CustomShape customShape) {
+//       this.pApplet = pApplet;
+//        movementAlgorithms = new MovementAlgorithms(pApplet);
+//        this.customShape = customShape;
+//    }
 
     public DecisionTree(PApplet pApplet, CustomShape customShape, int tileSize, int tileCountWidth, int tileCountHeight, ArrayList<Tile> allTiles, Graph roomGraph) {
         this.pApplet = pApplet;
@@ -41,13 +42,15 @@ public class DecisionTree  {
         R1_x = 50;
         R1_y = 50;
 
+        path = new ArrayList<PVector>();
+
 
     }
 
     public NodeInterface makeTree()
     {
         // get leaves
-        NodeInterface leaf1 = new wanderLeaf(new InternalNode(), null, null);
+        NodeInterface leaf1 = new RandomPathFollowingLeaf(new InternalNode(), null, null);
 
         NodeInterface leaf2 = new PathFollowingLeaf(new InternalNode(), null, null);
         ((PathFollowingLeaf)leaf2).setX(S1_x);
@@ -75,9 +78,11 @@ public class DecisionTree  {
         return root;
     }
 
-    public void traverseDT(NodeInterface root, SteeringClass steeringClass)
+    public ArrayList<PVector> traverseDT(NodeInterface root, SteeringClass steeringClass)
     {
         boolean flag;
+        path = new ArrayList<PVector>();
+
         NodeInterface temp = root;
         while (temp != null)
         {
@@ -87,6 +92,7 @@ public class DecisionTree  {
             else
                 temp = ((InternalNodeInterface)temp).getRight();
         }
+        return path;
     }
 
 
@@ -178,7 +184,7 @@ public class DecisionTree  {
             float x = steeringClass.getPosition().x;
             float y = steeringClass.getPosition().y;
 
-            if (x<=pApplet.width/2)
+            if (x<pApplet.width/3)
                 return true;
             else
                 return false;
@@ -253,37 +259,9 @@ public class DecisionTree  {
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
             pApplet.println("In PathFollowingLeaf\n");
-            ArrayList<PVector> path = pathFindingAlgo(X, Y, steeringClass);
-            PathFollowingAlgo(steeringClass, path);
-            //AnimatePathFollow animatePathFollow = new AnimatePathFollow(path, steeringClass, customShape);
-
-            //pApplet.unregisterMethod("draw", animatePathFollow);
+            path = pathFindingAlgo(X, Y, steeringClass);
 
             return true;
-        }
-
-        public void PathFollowingAlgo(SteeringClass character, ArrayList<PVector> path)
-        {
-            int lastIndex = 0;
-
-//            CustomShape c = new CustomShape(pApplet, "cuteMonster.jpeg", 30, 30);
-//            SteeringClass s = new SteeringClass(pApplet);
-//            s.setPosition(new PVector(200, 200));
-//            c.drawCustomShape(200, 200);
-
-            while (lastIndex < path.size()-1) {
-
-                //drawPath(path);
-
-                lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
-
-                customShape.setOrientation(character.getOrientation());
-                customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
-                //customShape.drawBreadcrumbs();
-
-                character.update(1);
-            }
-
         }
 
         public ArrayList<PVector> pathFindingAlgo(int mouseX, int mouseY, SteeringClass character)
@@ -293,9 +271,6 @@ public class DecisionTree  {
 
             edges = new ArrayList<Edge>();
             path = new ArrayList<PVector>();
-
-            edges.clear();
-            path.clear();
 
             PathFinding pathFinding = new PathFinding(pApplet);
 
@@ -319,31 +294,6 @@ public class DecisionTree  {
             return path;
         }
 
-        public ArrayList<Edge> guideCharacter(ArrayList<Edge> edges, SteeringClass character)
-        {
-            Tile tile;
-            //for (int i=0;i<edges.size();i++)
-            if (edges.size()>0)
-            {
-                //println(edges.get(i).toNode);
-                tile = getTileFromTileNum(edges.get(edges.size()-1).toNode);
-                PVector target = getPosFromTile(tile, tileSize);
-
-                //movementAlgorithms.align(character, targetOrientation);
-                movementAlgorithms.arrive(character, target);
-                customShape.setOrientation(character.getOrientation());
-                customShape.drawCustomShape(character.getPosition().x,character.getPosition().y);
-
-                //customShape.drawBreadcrumbs();
-
-                character.update(1);
-
-
-            }
-            //edges.clear();
-            return edges;
-
-        }
 
         public Tile getTileFromTileNum(int tileNum)
         {
@@ -374,43 +324,90 @@ public class DecisionTree  {
                 pApplet.line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
             }
         }
+    }
 
-//        public class AnimatePathFollow
-//        {
-//            /* Reference - https://groups.google.com/forum/#!topic/fadecandy/AMPRMHGqunE; Accessed on 04/06/2017 */
-//            /* Reference - http://www.abstractmachine.net/blog/registerdraw/; Accessed on 04/06/2017 */
-//
-//            ArrayList<PVector> path;
-//            SteeringClass character;
-//            CustomShape customShape;
-//
-//            int lastIndex;
-//
-//            public AnimatePathFollow(ArrayList<PVector> path, SteeringClass steeringClass, CustomShape customShape) {
-//                this.path = path;
-//                this.character = steeringClass;
-//                this.customShape = customShape;
-//                pApplet.registerMethod("draw", this);
-//                lastIndex = 0;
-//            }
-//
-//            public void draw()
-//            {
-//                lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
-//
-//                customShape.setOrientation(character.getOrientation());
-//                customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
-//                //customShape.drawBreadcrumbs();
-//
-//                character.update(1);
-//
-//                if (lastIndex==path.size()-1)
-//                    pApplet.unregisterMethod("draw", this);
-//
-//            }
-//            /* ------------------------------------------------------------------------------------------------------ */
-//        }
+    public class RandomPathFollowingLeaf extends InternalNodeInterface {
 
+        int X, Y;
+
+        public RandomPathFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+            //pApplet.registerMethod("Draw", this);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+            pApplet.println("In RandomPathFollowingLeaf\n");
+
+            int thresh = 20;
+            X = (int) pApplet.random(thresh, pApplet.width-thresh);
+            Y = (int) pApplet.random(thresh, pApplet.height-thresh);
+
+            path = pathFindingAlgo(X, Y, steeringClass);
+
+            return true;
+        }
+
+        public ArrayList<PVector> pathFindingAlgo(int mouseX, int mouseY, SteeringClass character)
+        {
+            ArrayList<Edge> edges;
+            ArrayList<PVector> path;
+
+            edges = new ArrayList<Edge>();
+            path = new ArrayList<PVector>();
+
+            PathFinding pathFinding = new PathFinding(pApplet);
+
+            Tile target = new Tile(mouseX, mouseY, tileSize, pApplet);
+            Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize, pApplet);
+
+            //println(charPos.tileNumber + "\t" + target.tileNumber);
+
+
+//            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
+            edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic");
+            if (edges!=null) {
+                for (int i = 0; i < edges.size(); i++)
+                    path.add(getPosFromTile(getTileFromTileNum(edges.get(i).toNode), tileSize));
+            }
+            else
+            {
+                //pApplet.println("No Path");
+                edges = new ArrayList<Edge>();
+            }
+            return path;
+        }
+
+
+        public Tile getTileFromTileNum(int tileNum)
+        {
+            int i;
+            for (i=0;i<allTiles.size();i++)
+            {
+                if (allTiles.get(i).tileNumber==tileNum)
+                    break;
+
+            }
+            return allTiles.get(i);
+        }
+
+        public PVector getPosFromTile(Tile tile, int tileSize)
+        {
+            float x = (tile.tileX*tileSize) + 0.5f * tileSize;
+            float y = (tile.tileY*tileSize) + 0.5f * tileSize;
+
+            return new PVector(x, y);
+
+
+        }
+
+        public void drawPath(ArrayList<PVector> path)
+        {
+            for (int i=0;i<path.size()-1;i++)
+            {
+                pApplet.line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
+            }
+        }
     }
 
 

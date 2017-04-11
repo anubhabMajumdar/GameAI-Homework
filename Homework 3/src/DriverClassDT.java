@@ -82,7 +82,7 @@ public class DriverClassDT extends PApplet {
     public void draw()
     {
         image(pImage, -0, 0, width, height);
-        line(width/2, 0, width/2, height);
+        line(width/3, 0, width/3, height);
         filter(THRESHOLD,0.5f);
 
 //        for (int i=0;i<allTiles.size();i++)
@@ -120,14 +120,15 @@ public class DriverClassDT extends PApplet {
 //
 //            //printPath(edges);
 //        }
-        if (millis()>startTime+300)
+        if ((millis()>startTime+500) && ((lastIndex==0) || (lastIndex==(path.size()-1))))
         {
-            decisionTree.traverseDT(root, character);
+            path = decisionTree.traverseDT(root, character);
             startTime = millis();
+            lastIndex = 0;
         }
 
 
-        //lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
+        lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
 
         customShape.setOrientation(character.getOrientation());
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
