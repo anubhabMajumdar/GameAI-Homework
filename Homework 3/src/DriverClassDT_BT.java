@@ -2,14 +2,14 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 /**
  * Created by anubhabmajumdar on 3/18/17.
  * Followed the tutorial for learning and reference - https://py.processing.org/tutorials/pixels/
  */
-public class DriverClassDT extends PApplet {
+public class DriverClassDT_BT extends PApplet {
 
     PImage pImage;
     int tileSize, tileCountWidth, tileCountHeight;
@@ -22,11 +22,16 @@ public class DriverClassDT extends PApplet {
     int target;
     MovementAlgorithms movementAlgorithms;
     ArrayList<Edge> edges;
-    ArrayList<PVector> path;
-    int lastIndex;
-    int startTime;
+    ArrayList<PVector> characterPath;
+    int lastIndex, lastIndexMonster;
+    int startTime, startTimeMonster;
     DecisionTree decisionTree;
-    NodeInterface root;
+    NodeInterface dtRoot;
+    SteeringClass monster_steeringClass;
+    CustomShape monster_customShape;
+    BehaviourTree behaviourTree;
+    NodeInterface btRoot;
+    ArrayList<PVector> monsterPath;
 
     public void settings()
     {
@@ -47,16 +52,21 @@ public class DriverClassDT extends PApplet {
         character = new SteeringClass(this);
         character.setPosition(new PVector(width-100, height-100));
         character.setOrientation(0);
-        //character.setAcceleration(new PVector(0.1f, 0.1f));
+
+        monster_steeringClass = new SteeringClass(this);
+        monster_steeringClass.setPosition(new PVector(100, height-100));
+        monster_steeringClass.setOrientation(0);
 
         movementAlgorithms = new MovementAlgorithms(this);
 
         edges = new ArrayList<Edge>();
-        path = new ArrayList<PVector>();
+        characterPath = new ArrayList<PVector>();
 
         lastIndex = 0;
+        lastIndexMonster = 0;
 
         startTime = millis();
+        startTimeMonster = millis();
 
     }
 
@@ -75,8 +85,14 @@ public class DriverClassDT extends PApplet {
         customShape = new CustomShape(this, "legoSuperman.png", w, h);
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
 
+        monster_customShape = new CustomShape(this, "cuteMonster.jpeg", w, h);
+        monster_customShape.drawCustomShape(monster_steeringClass.getPosition().x, monster_steeringClass.getPosition().y);
+
         decisionTree = new DecisionTree(this, customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph);
-        root = decisionTree.makeTree();
+        dtRoot = decisionTree.makeTree();
+
+        behaviourTree = new BehaviourTree(this, monster_customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, character);
+        btRoot = behaviourTree.makeTree();
     }
 
     public void draw()
@@ -86,24 +102,40 @@ public class DriverClassDT extends PApplet {
         filter(THRESHOLD,0.5f);
 
 
-        if ((millis()>startTime+300) && ((lastIndex==0) || (lastIndex==(path.size()-1))))
+        if ((millis()>startTime+300) && ((lastIndex==0) || (lastIndex==(characterPath.size()-1))))
         {
-            path = decisionTree.traverseDT(root, character);
+            characterPath = decisionTree.traverseDT(dtRoot, character);
             startTime = millis();
             lastIndex = 0;
         }
 
+        if ((millis()>startTimeMonster+300))
+        {
+            monsterPath = behaviourTree.traverseBT(btRoot, monster_steeringClass);
+            startTimeMonster = millis();
+        }
 
-        lastIndex = movementAlgorithms.pathFollowing(character, path, lastIndex);
+        lastIndex = movementAlgorithms.pathFollowing(character, characterPath, lastIndex);
+        lastIndexMonster = movementAlgorithms.pathFollowing(monster_steeringClass, monsterPath, lastIndexMonster);
 
         customShape.setOrientation(character.getOrientation());
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
         //customShape.drawBreadcrumbs();
 
+        monster_customShape.setOrientation(monster_steeringClass.getOrientation());
+        monster_customShape.drawCustomShape(monster_steeringClass.getPosition().x, monster_steeringClass.getPosition().y);
+        handleBoundary(monster_steeringClass);
+
         character.update(1);
+        monster_steeringClass.update(1);
 
-        //drawPath(characterPath);
+        drawPath(monsterPath);
 
+    }
+
+    public void handleBoundary(SteeringClass steeringClass)
+    {
+        steeringClass.setPosition(new PVector(steeringClass.getPosition().x%width, steeringClass.getPosition().y%height));
     }
 
     public void prettyPrintGrid(Graph graph)
@@ -281,7 +313,7 @@ public class DriverClassDT extends PApplet {
 
     public static void main(String[] args)
     {
-        PApplet.main("DriverClassDT");
+        PApplet.main("DriverClassDT_BT");
     }
 
 

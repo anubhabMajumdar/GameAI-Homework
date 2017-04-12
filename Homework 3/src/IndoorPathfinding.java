@@ -126,7 +126,7 @@ public class IndoorPathfinding extends PApplet {
 
         character.update(1);
 
-        //drawPath(path);
+        //drawPath(characterPath);
 
     }
 

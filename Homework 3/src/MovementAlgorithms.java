@@ -139,7 +139,7 @@ public class MovementAlgorithms {
         {
             int offset = 3;
             int curindex = nearestPoint(character.getPosition(), path, -1, path.size());
-            //int nextPoint = nearestPoint(character.getPosition(), path, curindex+1, offset);
+            //int nextPoint = nearestPoint(character.getPosition(), characterPath, curindex+1, offset);
             int nextPoint = curindex + offset;
             if (nextPoint>=path.size())
                 nextPoint = path.size()-1;
