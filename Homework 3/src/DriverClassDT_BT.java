@@ -85,7 +85,7 @@ public class DriverClassDT_BT extends PApplet {
         customShape = new CustomShape(this, "legoSuperman.png", w, h);
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
 
-        monster_customShape = new CustomShape(this, "cuteMonster.jpeg", w, h);
+        monster_customShape = new CustomShape(this, "cuteMonster_red.jpeg", w, h);
         monster_customShape.drawCustomShape(monster_steeringClass.getPosition().x, monster_steeringClass.getPosition().y);
 
         decisionTree = new DecisionTree(this, customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph);

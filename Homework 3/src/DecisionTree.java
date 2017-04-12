@@ -258,7 +258,7 @@ public class DecisionTree  {
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In PathFollowingLeaf\n");
+            pApplet.println("In SupermanFollowingLeaf\n");
             path = pathFindingAlgo(X, Y, steeringClass);
 
             return true;

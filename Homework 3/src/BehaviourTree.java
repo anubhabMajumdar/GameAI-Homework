@@ -52,15 +52,24 @@ public class BehaviourTree {
     public NodeInterface makeTree()
     {
         // get leaves
-        NodeInterface leaf1 = new OutsideRoomCheck(new InternalNode(), null, null);
+        NodeInterface outsideRoom = new OutsideRoomCheck(new InternalNode(), null, null);
 
-        NodeInterface leaf2 = new PathFollowingLeaf(new InternalNode(), null, null);
+        NodeInterface supermanFollowing = new SupermanFollowingLeaf(new InternalNode(), null, null);
 
-        NodeInterface leaf3 = new highSpeedRotLeaf(new InternalNode(), null, null);
+        NodeInterface stopAndRotate = new highSpeedRotLeaf(new InternalNode(), null, null);
+
+        NodeInterface caught = new CaughtCheck(new InternalNode(), null, null);
+
+        NodeInterface materialize = new Materialize(new InternalNode(), null, null);
+
+        NodeInterface changeMonster = new ChangeMonster(new InternalNode(), null, null);
 
         // get internal nodes
-        NodeInterface root = new Sequence(new InternalNode(), leaf1, leaf2);
-        //NodeInterface root = new Selector(new InternalNode(), internalNode1, leaf3);
+        NodeInterface internalNode1 = new Sequence(new InternalNode(), caught, materialize);
+        NodeInterface internalNode2 = new Sequence(new InternalNode(), outsideRoom, supermanFollowing);
+        NodeInterface internalNode3 = new RandomSelector(new InternalNode(), stopAndRotate, changeMonster);
+        NodeInterface internalNode4 = new Selector(new InternalNode(), internalNode2, internalNode3);
+        NodeInterface root = new Selector(new InternalNode(), internalNode1, internalNode4);
 
         return root;
     }
@@ -253,6 +262,56 @@ public class BehaviourTree {
         }
     }
 
+    public class CaughtCheck extends InternalNodeInterface
+    {
+        public CaughtCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            float dist = PVector.dist(steeringClass.getPosition(), superman.getPosition());
+            return (dist<50);
+        }
+    }
+
+    public class Materialize extends InternalNodeInterface
+    {
+        public Materialize(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            PVector p1 = new PVector(100, pApplet.height-100);
+            PVector p2 = new PVector(pApplet.width-100, pApplet.height/3);
+            if ((PVector.dist(superman.getPosition(), p1)) > (PVector.dist(superman.getPosition(), p2)))
+                steeringClass.setPosition(new PVector(p1.x, p1.y));
+            else
+                steeringClass.setPosition(new PVector(p2.x, p2.y));
+            return true;
+        }
+    }
+
+    public class ChangeMonster extends InternalNodeInterface
+    {
+        public ChangeMonster(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            if (customShape.getImageName().equals("cuteMonster_red.jpeg"))
+                customShape.setImageName("cuteMonster_blue.jpeg");
+            else
+                customShape.setImageName("cuteMonster_red.jpeg");
+            customShape.reloadPImage();
+            return true;
+        }
+    }
 
 
     public class NearWallCheckNode extends InternalNodeInterface
@@ -280,11 +339,11 @@ public class BehaviourTree {
         }
     }
 
-    public class PathFollowingLeaf extends InternalNodeInterface {
+    public class SupermanFollowingLeaf extends InternalNodeInterface {
 
         int X, Y;
 
-        public PathFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+        public SupermanFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);
             //pApplet.registerMethod("Draw", this);
         }
@@ -299,7 +358,7 @@ public class BehaviourTree {
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In PathFollowingLeaf\n");
+            pApplet.println("In SupermanFollowingLeaf\n");
             X = (int) superman.getPosition().x;
             Y = (int) superman.getPosition().y;
 
@@ -383,9 +442,9 @@ public class BehaviourTree {
         public boolean evaluate(SteeringClass steeringClass) {
             pApplet.println("In RandomPathFollowingLeaf\n");
 
-            int thresh = 20;
-            X = (int) pApplet.random(thresh, pApplet.width-thresh);
-            Y = (int) pApplet.random(thresh, pApplet.height-thresh);
+            int thresh = pApplet.width/3;
+            X = (int) pApplet.random(thresh, pApplet.width-20);
+            Y = (int) pApplet.random(20, pApplet.height-20);
 
             path = pathFindingAlgo(X, Y, steeringClass);
 
