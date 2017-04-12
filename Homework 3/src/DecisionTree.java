@@ -15,6 +15,7 @@ public class DecisionTree  {
     ArrayList<Tile> allTiles;
     Graph roomGraph;
     ArrayList<PVector> path;
+    SteeringClass monster;
 
     int S1_x, S1_y;
     int R1_x, R1_y;
@@ -25,7 +26,7 @@ public class DecisionTree  {
 //        this.customShape = customShape;
 //    }
 
-    public DecisionTree(PApplet pApplet, CustomShape customShape, int tileSize, int tileCountWidth, int tileCountHeight, ArrayList<Tile> allTiles, Graph roomGraph) {
+    public DecisionTree(PApplet pApplet, CustomShape customShape, int tileSize, int tileCountWidth, int tileCountHeight, ArrayList<Tile> allTiles, Graph roomGraph, SteeringClass monster) {
         this.pApplet = pApplet;
         this.movementAlgorithms = movementAlgorithms;
         this.customShape = customShape;
@@ -34,6 +35,7 @@ public class DecisionTree  {
         this.tileCountHeight = tileCountHeight;
         this.allTiles = allTiles;
         this.roomGraph = roomGraph;
+        this.monster = monster;
         movementAlgorithms = new MovementAlgorithms(pApplet);
 
         S1_x = pApplet.width/2;
@@ -66,14 +68,17 @@ public class DecisionTree  {
         ((PathFollowingLeaf)leaf5).setX(500);
         ((PathFollowingLeaf)leaf5).setY(300);
 
-        NodeInterface leaf6 = new ChangeCharacterLeaf(new InternalNode(), null, null);
+//        NodeInterface leaf6 = new ChangeCharacterLeaf(new InternalNode(), null, null);
+
+//        NodeInterface leaf7 = new Materialize(new InternalNode(), null, null);
+
 
         // get internal nodes
         NodeInterface internalNode1 = new NearWallCheckNode(new InternalNode(), leaf2, leaf1);
         NodeInterface internalNode2 = new OutsideRoomCheck(new InternalNode(), leaf3, internalNode1);
         NodeInterface internalNode3 = new MaxRotationCheckNode(new InternalNode(), leaf5, leaf4);
         NodeInterface root = new InsideRoomCheck(new InternalNode(), internalNode3, internalNode2);
-        //NodeInterface dtRoot = new SpeedCheckNode(new InternalNode(), leaf6, internalNode4);
+//        NodeInterface root = new CaughtCheck(new InternalNode(), leaf7, internalNode4);
 
         return root;
     }
@@ -236,6 +241,39 @@ public class DecisionTree  {
             }
 
             return false;
+        }
+    }
+
+    public class CaughtCheck extends InternalNodeInterface
+    {
+        public CaughtCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            float dist = PVector.dist(steeringClass.getPosition(), monster.getPosition());
+            return (dist<50);
+        }
+    }
+
+    public class Materialize extends InternalNodeInterface
+    {
+        public Materialize(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            PVector p1 = new PVector(100, pApplet.height-100);
+            PVector p2 = new PVector(pApplet.width-100, pApplet.height/3);
+            if ((PVector.dist(steeringClass.getPosition(), p1)) < (PVector.dist(steeringClass.getPosition(), p2)))
+                steeringClass.setPosition(new PVector(p1.x, p1.y));
+            else
+                steeringClass.setPosition(new PVector(p2.x, p2.y));
+            return true;
         }
     }
 

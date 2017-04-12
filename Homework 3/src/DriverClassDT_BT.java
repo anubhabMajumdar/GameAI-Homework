@@ -56,6 +56,8 @@ public class DriverClassDT_BT extends PApplet {
         monster_steeringClass = new SteeringClass(this);
         monster_steeringClass.setPosition(new PVector(100, height-100));
         monster_steeringClass.setOrientation(0);
+        monster_steeringClass.setMaxVel(new PVector(1.2f,1.2f));
+        monster_steeringClass.setMaxSpeed(1.2f);
 
         movementAlgorithms = new MovementAlgorithms(this);
 
@@ -88,7 +90,7 @@ public class DriverClassDT_BT extends PApplet {
         monster_customShape = new CustomShape(this, "cuteMonster_red.jpeg", w, h);
         monster_customShape.drawCustomShape(monster_steeringClass.getPosition().x, monster_steeringClass.getPosition().y);
 
-        decisionTree = new DecisionTree(this, customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph);
+        decisionTree = new DecisionTree(this, customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, monster_steeringClass);
         dtRoot = decisionTree.makeTree();
 
         behaviourTree = new BehaviourTree(this, monster_customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, character);
@@ -129,7 +131,7 @@ public class DriverClassDT_BT extends PApplet {
         character.update(1);
         monster_steeringClass.update(1);
 
-        drawPath(monsterPath);
+        //drawPath(monsterPath);
 
     }
 

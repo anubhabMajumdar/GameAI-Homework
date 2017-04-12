@@ -75,7 +75,9 @@ public class DriverClassDT extends PApplet {
         customShape = new CustomShape(this, "legoSuperman.png", w, h);
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
 
-        decisionTree = new DecisionTree(this, customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph);
+        SteeringClass dummy = new SteeringClass(this);
+        dummy.setPosition(new PVector(-1000, -1000));
+        decisionTree = new DecisionTree(this, customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, dummy);
         root = decisionTree.makeTree();
     }
 

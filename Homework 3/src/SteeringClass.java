@@ -34,6 +34,14 @@ public class SteeringClass {
         maxAngAcc = 0.1f;
     }
 
+    public void setMaxSpeed(float maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public void setMaxVel(PVector maxVel) {
+        this.maxVel = maxVel;
+    }
+
     public void setPosition(PVector pos)
     {
         position = pos;

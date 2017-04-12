@@ -286,7 +286,7 @@ public class BehaviourTree {
         public boolean evaluate(SteeringClass steeringClass) {
 
             PVector p1 = new PVector(100, pApplet.height-100);
-            PVector p2 = new PVector(pApplet.width-100, pApplet.height/3);
+            PVector p2 = new PVector(pApplet.width-100, 100);
             if ((PVector.dist(superman.getPosition(), p1)) > (PVector.dist(superman.getPosition(), p2)))
                 steeringClass.setPosition(new PVector(p1.x, p1.y));
             else
