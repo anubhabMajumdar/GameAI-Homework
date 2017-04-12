@@ -85,42 +85,8 @@ public class DriverClassDT extends PApplet {
         line(width/3, 0, width/3, height);
         filter(THRESHOLD,0.5f);
 
-//        for (int i=0;i<allTiles.size();i++)
-//        {
-//            PVector p = getPosFromTile(allTiles.get(i), tileSize);
-//            ellipse(p.x, p.y, 5, 5);
-//        }
 
-//        prettyPrintGrid(roomGraph);
-
-
-//        if (mousePressed)
-//        {
-//            edges.clear();
-//            path.clear();
-//            lastIndex = 0;
-//
-//            Tile target = new Tile(mouseX, mouseY, tileSize, this);
-//            Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize, this);
-//
-//            //println(charPos.tileNumber + "\t" + target.tileNumber);
-//
-//
-////            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
-//            edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic");
-//            if (edges!=null) {
-//                for (int i = 0; i < edges.size(); i++)
-//                    path.add(getPosFromTile(getTileFromTileNum(edges.get(i).toNode), tileSize));
-//            }
-//            else
-//            {
-//                println("No Path");
-//                edges = new ArrayList<Edge>();
-//            }
-//
-//            //printPath(edges);
-//        }
-        if ((millis()>startTime+500) && ((lastIndex==0) || (lastIndex==(path.size()-1))))
+        if ((millis()>startTime+300) && ((lastIndex==0) || (lastIndex==(path.size()-1))))
         {
             path = decisionTree.traverseDT(root, character);
             startTime = millis();
@@ -132,7 +98,7 @@ public class DriverClassDT extends PApplet {
 
         customShape.setOrientation(character.getOrientation());
         customShape.drawCustomShape(character.getPosition().x, character.getPosition().y);
-        customShape.drawBreadcrumbs();
+        //customShape.drawBreadcrumbs();
 
         character.update(1);
 
