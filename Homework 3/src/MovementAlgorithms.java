@@ -32,6 +32,14 @@ public class MovementAlgorithms {
         character.setAcceleration(deltaPos.normalize().mult(character.maxAcc));
     }
 
+    public void evade(SteeringClass character, PVector targetPos)
+    {
+        PVector deltaPos = PVector.sub(targetPos, character.getPosition());
+        deltaPos.mult(-1);
+        character.setOrientation(getOrientationFromVector(deltaPos));
+        character.setAcceleration(deltaPos.normalize().mult(character.maxAcc));
+    }
+
     public void arrive(SteeringClass character, PVector targetPos)
     {
         PVector deltaPos = PVector.sub(targetPos, character.getPosition());

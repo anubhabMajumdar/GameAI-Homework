@@ -71,7 +71,7 @@ public class BehaviourTree {
         NodeInterface internalNode4 = new Selector(new InternalNode(), internalNode2, internalNode3);
         NodeInterface root = new Selector(new InternalNode(), internalNode1, internalNode4);
 
-        return root;
+        return internalNode4;
     }
 
     public ArrayList<PVector> traverseBT(NodeInterface root, SteeringClass steeringClass)
@@ -272,7 +272,7 @@ public class BehaviourTree {
         public boolean evaluate(SteeringClass steeringClass) {
 
             float dist = PVector.dist(steeringClass.getPosition(), superman.getPosition());
-            return (dist<50);
+            return (dist<30);
         }
     }
 

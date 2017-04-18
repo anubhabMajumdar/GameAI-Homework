@@ -9,7 +9,7 @@ import java.util.*;
  * Created by anubhabmajumdar on 3/18/17.
  * Followed the tutorial for learning and reference - https://py.processing.org/tutorials/pixels/
  */
-public class DriverClassDT_BT extends PApplet {
+public class DriverClassDT_BT_RecordData extends PApplet {
 
     PImage pImage;
     int tileSize, tileCountWidth, tileCountHeight;

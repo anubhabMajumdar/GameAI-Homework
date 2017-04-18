@@ -68,17 +68,43 @@ public class DecisionTree  {
         ((PathFollowingLeaf)leaf5).setX(500);
         ((PathFollowingLeaf)leaf5).setY(300);
 
-//        NodeInterface leaf6 = new ChangeCharacterLeaf(new InternalNode(), null, null);
-
-//        NodeInterface leaf7 = new Materialize(new InternalNode(), null, null);
-
 
         // get internal nodes
         NodeInterface internalNode1 = new NearWallCheckNode(new InternalNode(), leaf2, leaf1);
         NodeInterface internalNode2 = new OutsideRoomCheck(new InternalNode(), leaf3, internalNode1);
         NodeInterface internalNode3 = new MaxRotationCheckNode(new InternalNode(), leaf5, leaf4);
         NodeInterface root = new InsideRoomCheck(new InternalNode(), internalNode3, internalNode2);
-//        NodeInterface root = new CaughtCheck(new InternalNode(), leaf7, internalNode4);
+
+        return root;
+    }
+
+    public NodeInterface makeTree2()
+    {
+        // get leaves
+        NodeInterface evade = new EvadeLeaf(new InternalNode(), null, null);
+
+        NodeInterface pathFollowingCenter = new PathFollowingLeaf(new InternalNode(), null, null);
+        ((PathFollowingLeaf)pathFollowingCenter).setX(S1_x);
+        ((PathFollowingLeaf)pathFollowingCenter).setY(S1_y);
+
+        NodeInterface pathFindCenter = new PathFollowingLeaf(new InternalNode(), null, null);
+        ((PathFollowingLeaf)pathFindCenter).setX(S1_x);
+        ((PathFollowingLeaf)pathFindCenter).setY(S1_y);
+
+        NodeInterface pathFindRoom = new PathFollowingLeaf(new InternalNode(), null, null);
+        ((PathFollowingLeaf)pathFindRoom).setX(R1_x);
+        ((PathFollowingLeaf)pathFindRoom).setY(R1_y);
+
+        NodeInterface stopAndRotate = new highSpeedRotLeaf(new InternalNode(), null, null);
+
+        NodeInterface randomPathFollowing = new RandomPathFollowingLeaf(new InternalNode(), null, null);
+
+
+        // get internal nodes
+        NodeInterface maxRotationCheck = new MaxRotationCheckNode(new InternalNode(), pathFindCenter, stopAndRotate);
+        NodeInterface vicinityCheck = new VicinityCheck(new InternalNode(), evade, randomPathFollowing);
+        NodeInterface outsideRoomCheck = new OutsideRoomCheck(new InternalNode(), pathFindRoom, vicinityCheck);
+        NodeInterface root = new InsideRoomCheck(new InternalNode(), maxRotationCheck, outsideRoomCheck);
 
         return root;
     }
@@ -244,9 +270,9 @@ public class DecisionTree  {
         }
     }
 
-    public class CaughtCheck extends InternalNodeInterface
+    public class VicinityCheck extends InternalNodeInterface
     {
-        public CaughtCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+        public VicinityCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);
         }
 
@@ -254,7 +280,7 @@ public class DecisionTree  {
         public boolean evaluate(SteeringClass steeringClass) {
 
             float dist = PVector.dist(steeringClass.getPosition(), monster.getPosition());
-            return (dist<50);
+            return (dist<100);
         }
     }
 
@@ -448,6 +474,98 @@ public class DecisionTree  {
         }
     }
 
+    public class GetAwayFromMonsterPathFollowingLeaf extends InternalNodeInterface {
+
+        int X, Y;
+
+        public GetAwayFromMonsterPathFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+            //pApplet.registerMethod("Draw", this);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+            pApplet.println("In GetAwayFromMonsterPathFollowingLeaf\n");
+
+            int thresh = 20;
+            int distThresh = 200;
+            X = (int) pApplet.random(thresh, pApplet.width-thresh);
+            Y = (int) pApplet.random(thresh, pApplet.height-thresh);
+            PVector curPos = new PVector(X, Y);
+            while (PVector.dist(curPos, monster.getPosition())<distThresh)
+            {
+                X = (int) pApplet.random(thresh, pApplet.width-thresh);
+                Y = (int) pApplet.random(thresh, pApplet.height-thresh);
+                curPos = new PVector(X, Y);
+            }
+
+            path = pathFindingAlgo(X, Y, steeringClass);
+
+            return true;
+        }
+
+        public ArrayList<PVector> pathFindingAlgo(int mouseX, int mouseY, SteeringClass character)
+        {
+            ArrayList<Edge> edges;
+            ArrayList<PVector> path;
+
+            edges = new ArrayList<Edge>();
+            path = new ArrayList<PVector>();
+
+            PathFinding pathFinding = new PathFinding(pApplet);
+
+            Tile target = new Tile(mouseX, mouseY, tileSize, pApplet);
+            Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize, pApplet);
+
+            //println(charPos.tileNumber + "\t" + target.tileNumber);
+
+
+//            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
+            edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic");
+            if (edges!=null) {
+                for (int i = 0; i < edges.size(); i++)
+                    path.add(getPosFromTile(getTileFromTileNum(edges.get(i).toNode), tileSize));
+            }
+            else
+            {
+                //pApplet.println("No Path");
+                edges = new ArrayList<Edge>();
+            }
+            return path;
+        }
+
+
+        public Tile getTileFromTileNum(int tileNum)
+        {
+            int i;
+            for (i=0;i<allTiles.size();i++)
+            {
+                if (allTiles.get(i).tileNumber==tileNum)
+                    break;
+
+            }
+            return allTiles.get(i);
+        }
+
+        public PVector getPosFromTile(Tile tile, int tileSize)
+        {
+            float x = (tile.tileX*tileSize) + 0.5f * tileSize;
+            float y = (tile.tileY*tileSize) + 0.5f * tileSize;
+
+            return new PVector(x, y);
+
+
+        }
+
+        public void drawPath(ArrayList<PVector> path)
+        {
+            for (int i=0;i<path.size()-1;i++)
+            {
+                pApplet.line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
+            }
+        }
+    }
+
 
 
 
@@ -511,9 +629,9 @@ public class DecisionTree  {
         }
     }
 
-    public class wanderLeaf extends InternalNodeInterface
+    public class EvadeLeaf extends InternalNodeInterface
     {
-        public wanderLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+        public EvadeLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);
         }
 
@@ -522,12 +640,8 @@ public class DecisionTree  {
             pApplet.println("In wander\n");
             try
             {
-                steeringClass.setAcceleration(new PVector(0.01f, 0.01f));
-                Wander wander = new Wander(pApplet);
-                PVector target = wander.wanderAlgo(steeringClass);
-
-                movementAlgorithms.align(steeringClass, getOrientationFromVector(PVector.sub(target, steeringClass.getPosition())));
-                movementAlgorithms.arrive(steeringClass, target);
+                MovementAlgorithms movementAlgorithms = new MovementAlgorithms(pApplet);
+                movementAlgorithms.evade(steeringClass, monster.getPosition());
 
                 return true;
             }
