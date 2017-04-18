@@ -19,6 +19,7 @@ public class BehaviourTree {
 
     int S1_x, S1_y;
     int R1_x, R1_y;
+    String action;
 
 //    public DecisionTree(PApplet pApplet, CustomShape customShape) {
 //       this.pApplet = pApplet;
@@ -46,6 +47,8 @@ public class BehaviourTree {
 
         path = new ArrayList<PVector>();
 
+        action = "";
+
 
     }
 
@@ -58,18 +61,18 @@ public class BehaviourTree {
 
         NodeInterface stopAndRotate = new highSpeedRotLeaf(new InternalNode(), null, null);
 
-        NodeInterface caught = new CaughtCheck(new InternalNode(), null, null);
+        //NodeInterface caught = new CaughtCheck(new InternalNode(), null, null);
 
-        NodeInterface materialize = new Materialize(new InternalNode(), null, null);
+        //NodeInterface materialize = new Materialize(new InternalNode(), null, null);
 
         NodeInterface changeMonster = new ChangeMonster(new InternalNode(), null, null);
 
         // get internal nodes
-        NodeInterface internalNode1 = new Sequence(new InternalNode(), caught, materialize);
+        //NodeInterface internalNode1 = new Sequence(new InternalNode(), caught, materialize);
         NodeInterface internalNode2 = new Sequence(new InternalNode(), outsideRoom, supermanFollowing);
         NodeInterface internalNode3 = new RandomSelector(new InternalNode(), stopAndRotate, changeMonster);
         NodeInterface internalNode4 = new Selector(new InternalNode(), internalNode2, internalNode3);
-        NodeInterface root = new Selector(new InternalNode(), internalNode1, internalNode4);
+        //NodeInterface root = new Selector(new InternalNode(), internalNode1, internalNode4);
 
         return internalNode4;
     }
@@ -84,6 +87,16 @@ public class BehaviourTree {
         return path;
     }
 
+    public BTReturnObject traverseBTRecordData(NodeInterface root, SteeringClass steeringClass)
+    {
+        boolean flag;
+        path = new ArrayList<PVector>();
+
+        root.evaluate(steeringClass);
+
+        BTReturnObject result = new BTReturnObject(path, action);
+        return result;
+    }
 
     public class InternalNode implements NodeInterface
     {
@@ -304,6 +317,8 @@ public class BehaviourTree {
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
 
+            action = "ChangeMonster";
+
             if (customShape.getImageName().equals("cuteMonster_red.jpeg"))
                 customShape.setImageName("cuteMonster_blue.jpeg");
             else
@@ -359,6 +374,9 @@ public class BehaviourTree {
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
             pApplet.println("In SupermanFollowingLeaf\n");
+
+            action = "PathFollow";
+
             X = (int) superman.getPosition().x;
             Y = (int) superman.getPosition().y;
 
@@ -525,6 +543,8 @@ public class BehaviourTree {
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
             pApplet.println("In rotation\n");
+
+            action = "Rotation";
 
             try
             {

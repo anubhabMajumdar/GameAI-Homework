@@ -32,6 +32,10 @@ public class DriverClassDT_BT_RecordData extends PApplet {
     BehaviourTree behaviourTree;
     NodeInterface btRoot;
     ArrayList<PVector> monsterPath;
+    PrintWriter pw;
+    int dataCount, dataCountThresh;
+    BTReturnObject btReturnObject;
+    String action;
 
     public void settings()
     {
@@ -48,7 +52,7 @@ public class DriverClassDT_BT_RecordData extends PApplet {
         w = 20;
         h = 20;
 
-        float monsterVel = 0.9f;
+        float monsterVel = 0.7f;
 
         pathFinding = new PathFinding(this);
         character = new SteeringClass(this);
@@ -71,6 +75,9 @@ public class DriverClassDT_BT_RecordData extends PApplet {
 
         startTime = millis();
         startTimeMonster = millis();
+
+        dataCount = 1;
+        dataCountThresh = 100000;
 
     }
 
@@ -97,6 +104,64 @@ public class DriverClassDT_BT_RecordData extends PApplet {
 
         behaviourTree = new BehaviourTree(this, monster_customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, character);
         btRoot = behaviourTree.makeTree();
+
+        // Followed stackoverflow - http://stackoverflow.com/questions/30073980/java-writing-strings-to-a-csv-file; Accessed on - 04/17/17
+        try {
+            pw = new PrintWriter(new File("trainData2.csv"));
+            StringBuilder sb = new StringBuilder();
+            sb.append("character_posX");
+            sb.append(',');
+            sb.append("character_posY");
+            sb.append(',');
+            sb.append("character_velX");
+            sb.append(',');
+            sb.append("character_velY");
+            sb.append(',');
+            sb.append("character_accX");
+            sb.append(',');
+            sb.append("character_accY");
+            sb.append(',');
+            sb.append("character_orientation");
+            sb.append(',');
+            sb.append("character_rotation");
+            sb.append(',');
+            sb.append("character_angAcc");
+
+            sb.append(',');
+            sb.append("monster_posX");
+            sb.append(',');
+            sb.append("monster_posY");
+            sb.append(',');
+            sb.append("monster_velX");
+            sb.append(',');
+            sb.append("monster_velY");
+            sb.append(',');
+            sb.append("monster_accX");
+            sb.append(',');
+            sb.append("monster_accY");
+            sb.append(',');
+            sb.append("monster_orientation");
+            sb.append(',');
+            sb.append("monster_rotation");
+            sb.append(',');
+            sb.append("monster_angAcc");
+
+            sb.append(',');
+            sb.append("monster_image");
+
+            sb.append(',');
+            sb.append("action");
+
+            sb.append('\n');
+            pw.write(sb.toString());
+            //pw.close();
+        }
+        catch (Exception ex)
+        {
+            println("Cannot open file");
+        }
+        // ------------------------------------------------------------------------------------------------------------------------------
+
     }
 
     public void draw()
@@ -115,7 +180,11 @@ public class DriverClassDT_BT_RecordData extends PApplet {
 
         if ((millis()>startTimeMonster+700))
         {
-            monsterPath = behaviourTree.traverseBT(btRoot, monster_steeringClass);
+            btReturnObject = behaviourTree.traverseBTRecordData(btRoot, monster_steeringClass);
+            monsterPath = btReturnObject.getPath();
+            action = btReturnObject.getAction();
+
+            //monsterPath = behaviourTree.traverseBT(btRoot, monster_steeringClass);
             startTimeMonster = millis();
         }
 
@@ -131,14 +200,85 @@ public class DriverClassDT_BT_RecordData extends PApplet {
         monster_customShape.drawCustomShape(monster_steeringClass.getPosition().x, monster_steeringClass.getPosition().y);
         handleBoundary(monster_steeringClass);
 
-        reset();
+        if (!reset())
+        {
+            try
+            {
+                if (dataCount<dataCountThresh) {
+                    recordData(character, monster_steeringClass, monster_customShape, action);
+                    println("Recorded data " + dataCount++);
+                }
+                else if (dataCount==dataCountThresh)
+                {
+                    pw.close();
+                    print("File closed");
+                }
+            }
+            catch (Exception ex)
+            {
+                println("Cannot record data");
+            }
+        }
 
         character.update(1);
         monster_steeringClass.update(1);
 
+
         //drawPath(monsterPath);
         //drawPath(characterPath);
 
+    }
+
+    public void recordData(SteeringClass character, SteeringClass monster, CustomShape monster_customShape, String action)
+    {
+        // Followed stackoverflow - http://stackoverflow.com/questions/30073980/java-writing-strings-to-a-csv-file; Accessed on - 04/17/17
+        StringBuilder sb = new StringBuilder();
+        sb.append(character.getPosition().x);
+        sb.append(',');
+        sb.append(character.getPosition().y);
+        sb.append(',');
+        sb.append(character.getVelocity().x);
+        sb.append(',');
+        sb.append(character.getVelocity().y);
+        sb.append(',');
+        sb.append(character.getAcceleration().x);
+        sb.append(',');
+        sb.append(character.getAcceleration().y);
+        sb.append(',');
+        sb.append(character.getOrientation());
+        sb.append(',');
+        sb.append(character.getRotation());
+        sb.append(',');
+        sb.append(character.getAngularAcc());
+
+        sb.append(',');
+        sb.append(monster.getPosition().x);
+        sb.append(',');
+        sb.append(monster.getPosition().y);
+        sb.append(',');
+        sb.append(monster.getVelocity().x);
+        sb.append(',');
+        sb.append(monster.getVelocity().y);
+        sb.append(',');
+        sb.append(monster.getAcceleration().x);
+        sb.append(',');
+        sb.append(monster.getAcceleration().y);
+        sb.append(',');
+        sb.append(monster.getOrientation());
+        sb.append(',');
+        sb.append(monster.getRotation());
+        sb.append(',');
+        sb.append(monster.getAngularAcc());
+
+
+        sb.append(',');
+        sb.append(monster_customShape.getImageName());
+
+        sb.append(',');
+        sb.append(action);
+
+        sb.append('\n');
+        pw.write(sb.toString());
     }
 
     public void handleBoundary(SteeringClass steeringClass)
@@ -146,10 +286,27 @@ public class DriverClassDT_BT_RecordData extends PApplet {
         steeringClass.setPosition(new PVector(steeringClass.getPosition().x%width, steeringClass.getPosition().y%height));
     }
 
-    public void reset()
+    public boolean reset()
     {
         if (PVector.dist(monster_steeringClass.getPosition(), character.getPosition())<30)
         {
+            try
+            {
+                if (dataCount<dataCountThresh) {
+                    recordData(character, monster_steeringClass, monster_customShape, "reset");
+                    println("Recorded data " + dataCount++);
+                }
+                else if (dataCount==dataCountThresh)
+                {
+                    pw.close();
+                    print("File closed");
+                }
+            }
+            catch (Exception ex)
+            {
+                println("Cannot record data");
+            }
+
             characterPath = new ArrayList<PVector>();
             lastIndex = 0;
             character.setPosition(new PVector(width-100, height-100));
@@ -159,8 +316,9 @@ public class DriverClassDT_BT_RecordData extends PApplet {
             lastIndexMonster = 0;
             monster_steeringClass.setPosition(new PVector(100, height-100));
             monster_steeringClass.setOrientation(0);
-
+            return true;
         }
+        return false;
     }
 
     public void prettyPrintGrid(Graph graph)
@@ -338,7 +496,7 @@ public class DriverClassDT_BT_RecordData extends PApplet {
 
     public static void main(String[] args)
     {
-        PApplet.main("DriverClassDT_BT");
+        PApplet.main("DriverClassDT_BT_RecordData");
     }
 
 
