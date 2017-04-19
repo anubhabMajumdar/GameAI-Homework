@@ -83,7 +83,8 @@ public class DTLearning {
             features.add(Arrays.copyOfRange(vals, 0, vals.length-1));
             actions.add(Arrays.copyOfRange(vals, vals.length-1, vals.length));
         }
-        learningDT(features, actions, 1);
+        conditionalEntropy(features, actions, 1);
+        //learningDT(features, actions, 1);
 //        System.out.println(((String[]) (features.get(0)))[1]);
 //        System.out.println(((String[]) (actions.get(0)))[0]);
     }
@@ -100,6 +101,83 @@ public class DTLearning {
         learningDT(features, actions, height+1);
         return;
 
+    }
+
+    public double conditionalEntropy(ArrayList<String[]> features, ArrayList<String[]> actions, int X)
+    {
+        HashMap<String, Integer> typesX = new HashMap<String, Integer>();
+        int tempCount = 0;
+        typesX.put(features.get(0)[X], tempCount++);
+
+        for (int i=1;i<features.size();i++)
+        {
+            if (typesX.containsKey(features.get(i)[X]))
+                continue;
+            else
+                typesX.put(features.get(i)[X], tempCount++);
+        }
+
+        HashMap<String, Integer> uniqueActions = new HashMap<String, Integer>();
+        tempCount = 0;
+        uniqueActions.put(actions.get(0)[0], tempCount++);
+        for (int i=1;i<actions.size();i++)
+        {
+            if (uniqueActions.containsKey(actions.get(i)[0]))
+                continue;
+            else
+                uniqueActions.put(actions.get(i)[0], tempCount++);
+        }
+
+        double[][] countMatrix = new double[typesX.size()][uniqueActions.size()];
+
+        for (int i=0;i<typesX.size();i++)
+        {
+            for (int j=0;j<uniqueActions.size();j++)
+            {
+                countMatrix[i][j] = 0;
+            }
+        }
+        int r, c;
+        for (int i=0;i<features.size();i++)
+        {
+            r = typesX.get(features.get(i)[X]);
+            c = uniqueActions.get(actions.get(i)[0]);
+
+            countMatrix[r][c]++;
+        }
+
+        double[] typesXCount = new double[typesX.size()];
+        for (int i=0;i<typesX.size();i++) {
+            typesXCount[i] = 0;
+            for (int j = 0; j < uniqueActions.size(); j++) {
+                typesXCount[i] += countMatrix[i][j];
+            }
+        }
+
+
+        double result = 0;
+        double temp = 0;
+        for (int i=0;i<typesX.size();i++)
+        {
+            temp = 0;
+            for (int j = 0; j < uniqueActions.size(); j++)
+            {
+                if (countMatrix[i][j] != 0 && typesXCount[i] != 0)
+                {
+                    double t1 = countMatrix[i][j] / typesXCount[i];
+                    double t2 = Math.log(t1);
+                    double t3 =  Math.log(2);
+                    temp +=  -1 * t1 * (t2/t3);
+                }
+                else
+                {
+                    temp += 0;
+                }
+            }
+            result += (typesXCount[i]/features.size()) * temp;
+        }
+
+        return result;
     }
 
     public void recordFeatures(float charPosX, float charPosY, float monsterPosX, float monsterPosY, String action)
