@@ -77,7 +77,7 @@ public class DriverClassDT_BT_RecordData extends PApplet {
         startTimeMonster = millis();
 
         dataCount = 1;
-        dataCountThresh = 100000;
+        dataCountThresh = 10000;
 
     }
 
