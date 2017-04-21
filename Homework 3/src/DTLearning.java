@@ -95,7 +95,7 @@ public class DTLearning {
             actions.add(Arrays.copyOfRange(vals, vals.length-1, vals.length));
         }
 
-        learningDT(features, actions, 1, -1, 0);
+        learningDT(features, actions, 1, "N/A", "N/A");
 //        FeaturesAndActions left = getSplitFeaturesAndActions(features,actions,0, "far");
 //        System.out.println(oneActionOnly(left.filteredActions));
 
@@ -103,19 +103,20 @@ public class DTLearning {
 //        System.out.println(((String[]) (actions.get(0)))[0]);
     }
 
-    public void learningDT(ArrayList<String[]> features, ArrayList<String[]> actions, int height, int parent, int nodeID)
+    public void learningDT(ArrayList<String[]> features, ArrayList<String[]> actions, int height, String parent, String parentVal)
     {
         //System.out.println("NodeID-->"+(nodeID)+"\tParentID-->"+parent);
 
         if (oneActionOnly(actions))
         {
-            System.out.println("NodeID-->"+(nodeID)+"\tParentID-->"+parent+"\t"+"Leaf\t"+actions.get(0)[0]);
+            System.out.println("Parent Node-->"+parent+"\tParent Value-->"+parentVal+"\t"+"Current Node-->Leaf\t"+actions.get(0)[0]);
             return;
         }
 
         if (height>features.get(0).length)
         {
-            System.out.println("NodeID-->"+(nodeID)+"\tParentID-->"+parent+"\t"+"Leaf\t"+chooseActionWithMaxProb(actions));
+            //System.out.println("NodeID-->"+(nodeID)+"\tParentID-->"+parent+"\tParent Value-->"+parentVal+"\t"+"Leaf\t"+chooseActionWithMaxProb(actions));
+            System.out.println("Parent Node-->"+parent+"\tParent Value-->"+parentVal+"\t"+"Current Node-->Leaf\t"+getActionProbailities(actions));
             return;
         }
 
@@ -125,17 +126,18 @@ public class DTLearning {
 
         if (uniqueTypes.size()<=1)
         {
-            System.out.println("NodeID-->"+(nodeID)+"\tParentID-->"+parent+"\t"+"Leaf\t"+chooseActionWithMaxProb(actions));
+            //System.out.println("NodeID-->"+(nodeID)+"\tParentID-->"+parent+"\tParent Value-->"+parentVal+"\t"+"Leaf\t"+chooseActionWithMaxProb(actions));
+            System.out.println("Parent Node-->"+parent+"\tParent Value-->"+parentVal+"\t"+"Current Node-->Leaf\t"+getActionProbailities(actions));
             return;
         }
 
-        System.out.println("NodeID-->"+(nodeID)+"\tParentID-->"+parent+"\t"+featureNames.get(splitFeatureIndex)+"\tLeft-->"+uniqueTypes.get(0)+"\tRight-->"+uniqueTypes.get(1));
+        System.out.println("Parent Node-->"+parent+"\tParent Value-->"+parentVal+"\tCurrent Node-->"+featureNames.get(splitFeatureIndex)+"\tLeft-->"+uniqueTypes.get(0)+"\tRight-->"+uniqueTypes.get(1));
 
         FeaturesAndActions left = getSplitFeaturesAndActions(features,actions,splitFeatureIndex, uniqueTypes.get(0));
         FeaturesAndActions right = getSplitFeaturesAndActions(features,actions,splitFeatureIndex, uniqueTypes.get(1));
 
-        learningDT(left.filteredFeatures, left.filteredActions, height+1, nodeID, nodeID+1);
-        learningDT(right.filteredFeatures, right.filteredActions, height+1, nodeID, nodeID+2);
+        learningDT(left.filteredFeatures, left.filteredActions, height+1, featureNames.get(splitFeatureIndex), left.filteredFeatures.get(0)[splitFeatureIndex]);
+        learningDT(right.filteredFeatures, right.filteredActions, height+1, featureNames.get(splitFeatureIndex), right.filteredFeatures.get(0)[splitFeatureIndex]);
 
         return;
 
@@ -201,8 +203,50 @@ public class DTLearning {
         }
 
         return result;
+    }
 
+    public String getActionProbailities(ArrayList<String[]> actions)
+    {
+        HashMap<String,Double> actionCount = new HashMap<>();
+        for (int i=0;i<actions.size();i++)
+        {
+            if (actionCount.containsKey(actions.get(i)[0]))
+            {
+                double cur = actionCount.get(actions.get(i)[0]);
+                actionCount.put(actions.get(i)[0], cur+1);
+            }
+            else
+            {
+                actionCount.put(actions.get(i)[0], 1.0);
+            }
+        }
 
+        HashMap<String, Integer> uniqueActions = new HashMap<String, Integer>();
+        int tempCount = 0;
+        uniqueActions.put(actions.get(0)[0], tempCount++);
+        for (int i=1;i<actions.size();i++)
+        {
+            if (uniqueActions.containsKey(actions.get(i)[0]))
+                continue;
+            else
+                uniqueActions.put(actions.get(i)[0], tempCount++);
+        }
+
+        ArrayList<String> uac = new ArrayList<>(uniqueActions.keySet());
+        int total = 0;
+        int max = -1;
+        String result = "";
+
+        for (int i=0;i<uac.size();i++)
+        {
+            total += actionCount.get(uac.get(i));
+        }
+
+        for (int i=0;i<uac.size();i++)
+        {
+            result += uac.get(i) + "\tProbability=" + (double)(actionCount.get(uac.get(i))/total) + "\t";
+        }
+        return result;
     }
 
     public ArrayList<String> getUniqueTypesX(ArrayList<String[]> features, int X)
