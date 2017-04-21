@@ -14,7 +14,7 @@ public class DTLearning {
     public void getFeatures(String fileName)
     {
         try {
-            pw = new PrintWriter(new File("features.csv"));
+            pw = new PrintWriter(new File("features2.csv"));
             StringBuilder sb = new StringBuilder();
             sb.append("Distance Between Objects");
             sb.append(',');
@@ -489,8 +489,8 @@ public class DTLearning {
 
     public static void main(String args[]) throws IOException
     {
-        //new DTLearning().getFeatures("trainData.csv");
-        new DTLearning().makeDTFromFeatures("features.csv");
+        new DTLearning().getFeatures("trainData2.csv");
+        new DTLearning().makeDTFromFeatures("features2.csv");
     }
 
 }
