@@ -21,11 +21,6 @@ public class BehaviourTree {
     int R1_x, R1_y;
     String action;
 
-//    public DecisionTree(PApplet pApplet, CustomShape customShape) {
-//       this.pApplet = pApplet;
-//        movementAlgorithms = new MovementAlgorithms(pApplet);
-//        this.customShape = customShape;
-//    }
 
     public BehaviourTree(PApplet pApplet, CustomShape customShape, int tileSize, int tileCountWidth, int tileCountHeight, ArrayList<Tile> allTiles, Graph roomGraph, SteeringClass superman) {
         this.pApplet = pApplet;
@@ -198,36 +193,36 @@ public class BehaviourTree {
 
 
 
-    public class SpeedCheckNode extends InternalNodeInterface
-    {
-        public SpeedCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            if (steeringClass.getVelocity().mag() >= steeringClass.maxSpeed)
-                return true;    // Accelaration > threshold
-            else
-                return false;
-        }
-    }
-
-    public class MaxRotationCheckNode extends InternalNodeInterface
-    {
-        public MaxRotationCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-//            pApplet.println(steeringClass.getRotation());
-            if (Math.abs(steeringClass.getRotation()) >= steeringClass.maxRot)
-                return true;    // Accelaration > threshold
-            else
-                return false;
-        }
-    }
+//    public class SpeedCheckNode extends InternalNodeInterface
+//    {
+//        public SpeedCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//            if (steeringClass.getVelocity().mag() >= steeringClass.maxSpeed)
+//                return true;    // Accelaration > threshold
+//            else
+//                return false;
+//        }
+//    }
+//
+//    public class MaxRotationCheckNode extends InternalNodeInterface
+//    {
+//        public MaxRotationCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+////            pApplet.println(steeringClass.getRotation());
+//            if (Math.abs(steeringClass.getRotation()) >= steeringClass.maxRot)
+//                return true;    // Accelaration > threshold
+//            else
+//                return false;
+//        }
+//    }
 
     public class OutsideRoomCheck extends InternalNodeInterface
     {
@@ -252,61 +247,61 @@ public class BehaviourTree {
         }
     }
 
-    public class InsideRoomCheck extends InternalNodeInterface
-    {
-        public InsideRoomCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-
-            float x = steeringClass.getPosition().x;
-            float y = steeringClass.getPosition().y;
-
-            int room_width = 190;
-            int room_height = 190;
-
-
-            if ((x<room_width) && (y<room_height))
-                return true;
-            else
-                return false;
-        }
-    }
-
-    public class CaughtCheck extends InternalNodeInterface
-    {
-        public CaughtCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-
-            float dist = PVector.dist(steeringClass.getPosition(), superman.getPosition());
-            return (dist<30);
-        }
-    }
-
-    public class Materialize extends InternalNodeInterface
-    {
-        public Materialize(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-
-            PVector p1 = new PVector(100, pApplet.height-100);
-            PVector p2 = new PVector(pApplet.width-100, 100);
-            if ((PVector.dist(superman.getPosition(), p1)) > (PVector.dist(superman.getPosition(), p2)))
-                steeringClass.setPosition(new PVector(p1.x, p1.y));
-            else
-                steeringClass.setPosition(new PVector(p2.x, p2.y));
-            return true;
-        }
-    }
+//    public class InsideRoomCheck extends InternalNodeInterface
+//    {
+//        public InsideRoomCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//
+//            float x = steeringClass.getPosition().x;
+//            float y = steeringClass.getPosition().y;
+//
+//            int room_width = 190;
+//            int room_height = 190;
+//
+//
+//            if ((x<room_width) && (y<room_height))
+//                return true;
+//            else
+//                return false;
+//        }
+//    }
+//
+//    public class CaughtCheck extends InternalNodeInterface
+//    {
+//        public CaughtCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//
+//            float dist = PVector.dist(steeringClass.getPosition(), superman.getPosition());
+//            return (dist<30);
+//        }
+//    }
+//
+//    public class Materialize extends InternalNodeInterface
+//    {
+//        public Materialize(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//
+//            PVector p1 = new PVector(100, pApplet.height-100);
+//            PVector p2 = new PVector(pApplet.width-100, 100);
+//            if ((PVector.dist(superman.getPosition(), p1)) > (PVector.dist(superman.getPosition(), p2)))
+//                steeringClass.setPosition(new PVector(p1.x, p1.y));
+//            else
+//                steeringClass.setPosition(new PVector(p2.x, p2.y));
+//            return true;
+//        }
+//    }
 
     public class ChangeMonster extends InternalNodeInterface
     {
@@ -329,30 +324,30 @@ public class BehaviourTree {
     }
 
 
-    public class NearWallCheckNode extends InternalNodeInterface
-    {
-        int thresh;
-
-        public NearWallCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-            thresh = 50;
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            //pApplet.println("In NearWallCheckNode");
-            //pApplet.println(steeringClass.getAngularAcc());
-            float x = steeringClass.getPosition().x;
-            float y = steeringClass.getPosition().y;
-            if ((x<thresh) || (x>pApplet.width-thresh) || (y<thresh) || (y>pApplet.height-thresh))
-            {
-                //movementAlgorithms.arrive(steeringClass, new PVector(pApplet.width/2, pApplet.height/2));
-                return true;
-            }
-
-            return false;
-        }
-    }
+//    public class NearWallCheckNode extends InternalNodeInterface
+//    {
+//        int thresh;
+//
+//        public NearWallCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//            thresh = 50;
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//            //pApplet.println("In NearWallCheckNode");
+//            //pApplet.println(steeringClass.getAngularAcc());
+//            float x = steeringClass.getPosition().x;
+//            float y = steeringClass.getPosition().y;
+//            if ((x<thresh) || (x>pApplet.width-thresh) || (y<thresh) || (y>pApplet.height-thresh))
+//            {
+//                //movementAlgorithms.arrive(steeringClass, new PVector(pApplet.width/2, pApplet.height/2));
+//                return true;
+//            }
+//
+//            return false;
+//        }
+//    }
 
     public class SupermanFollowingLeaf extends InternalNodeInterface {
 
@@ -561,72 +556,72 @@ public class BehaviourTree {
         }
     }
 
-    public class ChangeCharacterLeaf extends InternalNodeInterface
-    {
-        public ChangeCharacterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
+//    public class ChangeCharacterLeaf extends InternalNodeInterface
+//    {
+//        public ChangeCharacterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//
+//
+//            try
+//            {
+//                pApplet.println("In setEverythingToZeroLeaf\n");
+////                steeringClass.setPosition(new PVector(pApplet.width/2, pApplet.height/2));
+//                if (customShape.getImageName().equals("legoBatman.png"))
+//                {
+//                    customShape.setImageName("legoSuperman.png");
+//                }
+//                else
+//                {
+//                    customShape.setImageName("legoBatman.png");
+//                }
+//                customShape.reloadPImage();
+//                steeringClass.setVelocity(new PVector(0,0));
+//                steeringClass.setAcceleration(new PVector(0,0));
+//
+//                return true;
+//            }
+//            catch (Exception e)
+//            {
+//                return false;
+//            }
+//        }
+//    }
 
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-
-
-            try
-            {
-                pApplet.println("In setEverythingToZeroLeaf\n");
-//                steeringClass.setPosition(new PVector(pApplet.width/2, pApplet.height/2));
-                if (customShape.getImageName().equals("legoBatman.png"))
-                {
-                    customShape.setImageName("legoSuperman.png");
-                }
-                else
-                {
-                    customShape.setImageName("legoBatman.png");
-                }
-                customShape.reloadPImage();
-                steeringClass.setVelocity(new PVector(0,0));
-                steeringClass.setAcceleration(new PVector(0,0));
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-    }
-
-    public class wanderLeaf extends InternalNodeInterface
-    {
-        public wanderLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In wander\n");
-            try
-            {
-                steeringClass.setAcceleration(new PVector(0.01f, 0.01f));
-                Wander wander = new Wander(pApplet);
-                PVector target = wander.wanderAlgo(steeringClass);
-
-                movementAlgorithms.align(steeringClass, getOrientationFromVector(PVector.sub(target, steeringClass.getPosition())));
-                movementAlgorithms.arrive(steeringClass, target);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-
-        public float getOrientationFromVector(PVector p)
-        {
-            return pApplet.atan2(-1 * p.x , p.y);
-        }
-    }
+//    public class wanderLeaf extends InternalNodeInterface
+//    {
+//        public wanderLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//            pApplet.println("In wander\n");
+//            try
+//            {
+//                steeringClass.setAcceleration(new PVector(0.01f, 0.01f));
+//                Wander wander = new Wander(pApplet);
+//                PVector target = wander.wanderAlgo(steeringClass);
+//
+//                movementAlgorithms.align(steeringClass, getOrientationFromVector(PVector.sub(target, steeringClass.getPosition())));
+//                movementAlgorithms.arrive(steeringClass, target);
+//
+//                return true;
+//            }
+//            catch (Exception e)
+//            {
+//                return false;
+//            }
+//        }
+//
+//        public float getOrientationFromVector(PVector p)
+//        {
+//            return pApplet.atan2(-1 * p.x , p.y);
+//        }
+//    }
 
 
 
