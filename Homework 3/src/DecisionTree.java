@@ -21,11 +21,6 @@ public class DecisionTree  {
     int S1_x, S1_y;
     int R1_x, R1_y;
 
-//    public DecisionTree(PApplet pApplet, CustomShape customShape) {
-//       this.pApplet = pApplet;
-//        movementAlgorithms = new MovementAlgorithms(pApplet);
-//        this.customShape = customShape;
-//    }
 
     public DecisionTree(PApplet pApplet, CustomShape customShape, int tileSize, int tileCountWidth, int tileCountHeight, ArrayList<Tile> allTiles, Graph roomGraph, SteeringClass monster) {
         this.pApplet = pApplet;
@@ -170,20 +165,20 @@ public class DecisionTree  {
         }
     }
 
-    public class SpeedCheckNode extends InternalNodeInterface
-    {
-        public SpeedCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            if (steeringClass.getVelocity().mag() >= steeringClass.maxSpeed)
-                return true;    // Accelaration > threshold
-            else
-                return false;
-        }
-    }
+//    public class SpeedCheckNode extends InternalNodeInterface
+//    {
+//        public SpeedCheckNode(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//            if (steeringClass.getVelocity().mag() >= steeringClass.maxSpeed)
+//                return true;    // Accelaration > threshold
+//            else
+//                return false;
+//        }
+//    }
 
     public class MaxRotationCheckNode extends InternalNodeInterface
     {
@@ -483,24 +478,24 @@ public class DecisionTree  {
         }
     }
 
-    public class Materialize extends InternalNodeInterface
-    {
-        public Materialize(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-
-            PVector p1 = new PVector(100, pApplet.height-100);
-            PVector p2 = new PVector(pApplet.width-100, pApplet.height/3);
-            if ((PVector.dist(steeringClass.getPosition(), p1)) < (PVector.dist(steeringClass.getPosition(), p2)))
-                steeringClass.setPosition(new PVector(p1.x, p1.y));
-            else
-                steeringClass.setPosition(new PVector(p2.x, p2.y));
-            return true;
-        }
-    }
+//    public class Materialize extends InternalNodeInterface
+//    {
+//        public Materialize(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//
+//            PVector p1 = new PVector(100, pApplet.height-100);
+//            PVector p2 = new PVector(pApplet.width-100, pApplet.height/3);
+//            if ((PVector.dist(steeringClass.getPosition(), p1)) < (PVector.dist(steeringClass.getPosition(), p2)))
+//                steeringClass.setPosition(new PVector(p1.x, p1.y));
+//            else
+//                steeringClass.setPosition(new PVector(p2.x, p2.y));
+//            return true;
+//        }
+//    }
 
     public class PathFollowingLeaf extends InternalNodeInterface {
 
@@ -673,161 +668,161 @@ public class DecisionTree  {
         }
     }
 
-    public class GetAwayFromMonsterPathFollowingLeaf extends InternalNodeInterface {
-
-        int X, Y;
-
-        public GetAwayFromMonsterPathFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-            //pApplet.registerMethod("Draw", this);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In GetAwayFromMonsterPathFollowingLeaf\n");
-
-            int thresh = 20;
-            int distThresh = 200;
-            X = (int) pApplet.random(thresh, pApplet.width-thresh);
-            Y = (int) pApplet.random(thresh, pApplet.height-thresh);
-            PVector curPos = new PVector(X, Y);
-            while (PVector.dist(curPos, monster.getPosition())<distThresh)
-            {
-                X = (int) pApplet.random(thresh, pApplet.width-thresh);
-                Y = (int) pApplet.random(thresh, pApplet.height-thresh);
-                curPos = new PVector(X, Y);
-            }
-
-            path = pathFindingAlgo(X, Y, steeringClass);
-
-            return true;
-        }
-
-        public ArrayList<PVector> pathFindingAlgo(int mouseX, int mouseY, SteeringClass character)
-        {
-            ArrayList<Edge> edges;
-            ArrayList<PVector> path;
-
-            edges = new ArrayList<Edge>();
-            path = new ArrayList<PVector>();
-
-            PathFinding pathFinding = new PathFinding(pApplet);
-
-            Tile target = new Tile(mouseX, mouseY, tileSize, pApplet);
-            Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize, pApplet);
-
-            //println(charPos.tileNumber + "\t" + target.tileNumber);
-
-
-//            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
-            edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic");
-            if (edges!=null) {
-                for (int i = 0; i < edges.size(); i++)
-                    path.add(getPosFromTile(getTileFromTileNum(edges.get(i).toNode), tileSize));
-            }
-            else
-            {
-                //pApplet.println("No Path");
-                edges = new ArrayList<Edge>();
-            }
-            return path;
-        }
-
-
-        public Tile getTileFromTileNum(int tileNum)
-        {
-            int i;
-            for (i=0;i<allTiles.size();i++)
-            {
-                if (allTiles.get(i).tileNumber==tileNum)
-                    break;
-
-            }
-            return allTiles.get(i);
-        }
-
-        public PVector getPosFromTile(Tile tile, int tileSize)
-        {
-            float x = (tile.tileX*tileSize) + 0.5f * tileSize;
-            float y = (tile.tileY*tileSize) + 0.5f * tileSize;
-
-            return new PVector(x, y);
-
-
-        }
-
-        public void drawPath(ArrayList<PVector> path)
-        {
-            for (int i=0;i<path.size()-1;i++)
-            {
-                pApplet.line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
-            }
-        }
-    }
-
-
-public class ChangeCharacterLeaf extends InternalNodeInterface
-    {
-        public ChangeCharacterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-
-
-            try
-            {
-                pApplet.println("In setEverythingToZeroLeaf\n");
-//                steeringClass.setPosition(new PVector(pApplet.width/2, pApplet.height/2));
-                if (customShape.getImageName().equals("legoBatman.png"))
-                {
-                    customShape.setImageName("legoSuperman.png");
-                }
-                else
-                {
-                    customShape.setImageName("legoBatman.png");
-                }
-                customShape.reloadPImage();
-                steeringClass.setVelocity(new PVector(0,0));
-                steeringClass.setAcceleration(new PVector(0,0));
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-    }
-
-    public class EvadeLeaf extends InternalNodeInterface
-    {
-        public EvadeLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In wander\n");
-            try
-            {
-                MovementAlgorithms movementAlgorithms = new MovementAlgorithms(pApplet);
-                movementAlgorithms.evade(steeringClass, monster.getPosition());
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-
-        public float getOrientationFromVector(PVector p)
-        {
-            return pApplet.atan2(-1 * p.x , p.y);
-        }
-    }
+//    public class GetAwayFromMonsterPathFollowingLeaf extends InternalNodeInterface {
+//
+//        int X, Y;
+//
+//        public GetAwayFromMonsterPathFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//            //pApplet.registerMethod("Draw", this);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//            pApplet.println("In GetAwayFromMonsterPathFollowingLeaf\n");
+//
+//            int thresh = 20;
+//            int distThresh = 200;
+//            X = (int) pApplet.random(thresh, pApplet.width-thresh);
+//            Y = (int) pApplet.random(thresh, pApplet.height-thresh);
+//            PVector curPos = new PVector(X, Y);
+//            while (PVector.dist(curPos, monster.getPosition())<distThresh)
+//            {
+//                X = (int) pApplet.random(thresh, pApplet.width-thresh);
+//                Y = (int) pApplet.random(thresh, pApplet.height-thresh);
+//                curPos = new PVector(X, Y);
+//            }
+//
+//            path = pathFindingAlgo(X, Y, steeringClass);
+//
+//            return true;
+//        }
+//
+//        public ArrayList<PVector> pathFindingAlgo(int mouseX, int mouseY, SteeringClass character)
+//        {
+//            ArrayList<Edge> edges;
+//            ArrayList<PVector> path;
+//
+//            edges = new ArrayList<Edge>();
+//            path = new ArrayList<PVector>();
+//
+//            PathFinding pathFinding = new PathFinding(pApplet);
+//
+//            Tile target = new Tile(mouseX, mouseY, tileSize, pApplet);
+//            Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize, pApplet);
+//
+//            //println(charPos.tileNumber + "\t" + target.tileNumber);
+//
+//
+////            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
+//            edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic");
+//            if (edges!=null) {
+//                for (int i = 0; i < edges.size(); i++)
+//                    path.add(getPosFromTile(getTileFromTileNum(edges.get(i).toNode), tileSize));
+//            }
+//            else
+//            {
+//                //pApplet.println("No Path");
+//                edges = new ArrayList<Edge>();
+//            }
+//            return path;
+//        }
+//
+//
+//        public Tile getTileFromTileNum(int tileNum)
+//        {
+//            int i;
+//            for (i=0;i<allTiles.size();i++)
+//            {
+//                if (allTiles.get(i).tileNumber==tileNum)
+//                    break;
+//
+//            }
+//            return allTiles.get(i);
+//        }
+//
+//        public PVector getPosFromTile(Tile tile, int tileSize)
+//        {
+//            float x = (tile.tileX*tileSize) + 0.5f * tileSize;
+//            float y = (tile.tileY*tileSize) + 0.5f * tileSize;
+//
+//            return new PVector(x, y);
+//
+//
+//        }
+//
+//        public void drawPath(ArrayList<PVector> path)
+//        {
+//            for (int i=0;i<path.size()-1;i++)
+//            {
+//                pApplet.line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
+//            }
+//        }
+//    }
+//
+//
+//public class ChangeCharacterLeaf extends InternalNodeInterface
+//    {
+//        public ChangeCharacterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//
+//
+//            try
+//            {
+//                pApplet.println("In setEverythingToZeroLeaf\n");
+////                steeringClass.setPosition(new PVector(pApplet.width/2, pApplet.height/2));
+//                if (customShape.getImageName().equals("legoBatman.png"))
+//                {
+//                    customShape.setImageName("legoSuperman.png");
+//                }
+//                else
+//                {
+//                    customShape.setImageName("legoBatman.png");
+//                }
+//                customShape.reloadPImage();
+//                steeringClass.setVelocity(new PVector(0,0));
+//                steeringClass.setAcceleration(new PVector(0,0));
+//
+//                return true;
+//            }
+//            catch (Exception e)
+//            {
+//                return false;
+//            }
+//        }
+//    }
+//
+//    public class EvadeLeaf extends InternalNodeInterface
+//    {
+//        public EvadeLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+//            super(nodeInterface, left, right);
+//        }
+//
+//        @Override
+//        public boolean evaluate(SteeringClass steeringClass) {
+//            pApplet.println("In wander\n");
+//            try
+//            {
+//                MovementAlgorithms movementAlgorithms = new MovementAlgorithms(pApplet);
+//                movementAlgorithms.evade(steeringClass, monster.getPosition());
+//
+//                return true;
+//            }
+//            catch (Exception e)
+//            {
+//                return false;
+//            }
+//        }
+//
+//        public float getOrientationFromVector(PVector p)
+//        {
+//            return pApplet.atan2(-1 * p.x , p.y);
+//        }
+//    }
 
 
 
