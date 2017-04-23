@@ -9,7 +9,7 @@ import java.util.*;
  * Created by anubhabmajumdar on 3/18/17.
  * Followed the tutorial for learning and reference - https://py.processing.org/tutorials/pixels/
  */
-public class DriverClassDT_BT_RecordData extends PApplet {
+public class DriverClassLearnedTree extends PApplet {
 
     PImage pImage;
     int tileSize, tileCountWidth, tileCountHeight;
@@ -29,7 +29,7 @@ public class DriverClassDT_BT_RecordData extends PApplet {
     NodeInterface dtRoot;
     SteeringClass monster_steeringClass;
     CustomShape monster_customShape;
-    BehaviourTree behaviourTree;
+    DecisionTree learnedTree;
     NodeInterface btRoot;
     ArrayList<PVector> monsterPath;
     PrintWriter pw;
@@ -102,65 +102,9 @@ public class DriverClassDT_BT_RecordData extends PApplet {
         decisionTree = new DecisionTree(this, customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, monster_steeringClass);
         dtRoot = decisionTree.makeTree();
 
-        behaviourTree = new BehaviourTree(this, monster_customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, character);
-        btRoot = behaviourTree.makeTree();
+        learnedTree = new DecisionTree(this, monster_customShape, tileSize, tileCountWidth, tileCountHeight, allTiles, roomGraph, character);
+        btRoot = learnedTree.makeLearnedTree();
 
-        // Followed stackoverflow - http://stackoverflow.com/questions/30073980/java-writing-strings-to-a-csv-file; Accessed on - 04/17/17
-        try {
-            pw = new PrintWriter(new File("trainData3.csv"));
-            StringBuilder sb = new StringBuilder();
-            sb.append("character_posX");
-            sb.append(',');
-            sb.append("character_posY");
-            sb.append(',');
-            sb.append("character_velX");
-            sb.append(',');
-            sb.append("character_velY");
-            sb.append(',');
-            sb.append("character_accX");
-            sb.append(',');
-            sb.append("character_accY");
-            sb.append(',');
-            sb.append("character_orientation");
-            sb.append(',');
-            sb.append("character_rotation");
-            sb.append(',');
-            sb.append("character_angAcc");
-
-            sb.append(',');
-            sb.append("monster_posX");
-            sb.append(',');
-            sb.append("monster_posY");
-            sb.append(',');
-            sb.append("monster_velX");
-            sb.append(',');
-            sb.append("monster_velY");
-            sb.append(',');
-            sb.append("monster_accX");
-            sb.append(',');
-            sb.append("monster_accY");
-            sb.append(',');
-            sb.append("monster_orientation");
-            sb.append(',');
-            sb.append("monster_rotation");
-            sb.append(',');
-            sb.append("monster_angAcc");
-
-            sb.append(',');
-            sb.append("monster_image");
-
-            sb.append(',');
-            sb.append("action");
-
-            sb.append('\n');
-            pw.write(sb.toString());
-            //pw.close();
-        }
-        catch (Exception ex)
-        {
-            println("Cannot open file");
-        }
-        // ------------------------------------------------------------------------------------------------------------------------------
 
     }
 
@@ -180,11 +124,8 @@ public class DriverClassDT_BT_RecordData extends PApplet {
 
         if ((millis()>startTimeMonster+700))
         {
-            btReturnObject = behaviourTree.traverseBTRecordData(btRoot, monster_steeringClass);
-            monsterPath = btReturnObject.getPath();
-            action = btReturnObject.getAction();
+            monsterPath = learnedTree.traverseDT(btRoot, monster_steeringClass);
 
-            //monsterPath = learnedTree.traverseBT(btRoot, monster_steeringClass);
             startTimeMonster = millis();
         }
 
@@ -200,25 +141,8 @@ public class DriverClassDT_BT_RecordData extends PApplet {
         monster_customShape.drawCustomShape(monster_steeringClass.getPosition().x, monster_steeringClass.getPosition().y);
         handleBoundary(monster_steeringClass);
 
-        if (!reset())
-        {
-            try
-            {
-                if (dataCount<dataCountThresh) {
-                    recordData(character, monster_steeringClass, monster_customShape, action);
-                    println("Recorded data " + dataCount++);
-                }
-                else if (dataCount==dataCountThresh)
-                {
-                    pw.close();
-                    print("File closed");
-                }
-            }
-            catch (Exception ex)
-            {
-                println("Cannot record data");
-            }
-        }
+
+        reset();
 
         character.update(1);
         monster_steeringClass.update(1);
@@ -229,57 +153,6 @@ public class DriverClassDT_BT_RecordData extends PApplet {
 
     }
 
-    public void recordData(SteeringClass character, SteeringClass monster, CustomShape monster_customShape, String action)
-    {
-        // Followed stackoverflow - http://stackoverflow.com/questions/30073980/java-writing-strings-to-a-csv-file; Accessed on - 04/17/17
-        StringBuilder sb = new StringBuilder();
-        sb.append(character.getPosition().x);
-        sb.append(',');
-        sb.append(character.getPosition().y);
-        sb.append(',');
-        sb.append(character.getVelocity().x);
-        sb.append(',');
-        sb.append(character.getVelocity().y);
-        sb.append(',');
-        sb.append(character.getAcceleration().x);
-        sb.append(',');
-        sb.append(character.getAcceleration().y);
-        sb.append(',');
-        sb.append(character.getOrientation());
-        sb.append(',');
-        sb.append(character.getRotation());
-        sb.append(',');
-        sb.append(character.getAngularAcc());
-
-        sb.append(',');
-        sb.append(monster.getPosition().x);
-        sb.append(',');
-        sb.append(monster.getPosition().y);
-        sb.append(',');
-        sb.append(monster.getVelocity().x);
-        sb.append(',');
-        sb.append(monster.getVelocity().y);
-        sb.append(',');
-        sb.append(monster.getAcceleration().x);
-        sb.append(',');
-        sb.append(monster.getAcceleration().y);
-        sb.append(',');
-        sb.append(monster.getOrientation());
-        sb.append(',');
-        sb.append(monster.getRotation());
-        sb.append(',');
-        sb.append(monster.getAngularAcc());
-
-
-        sb.append(',');
-        sb.append(monster_customShape.getImageName());
-
-        sb.append(',');
-        sb.append(action);
-
-        sb.append('\n');
-        pw.write(sb.toString());
-    }
 
     public void handleBoundary(SteeringClass steeringClass)
     {
@@ -290,23 +163,6 @@ public class DriverClassDT_BT_RecordData extends PApplet {
     {
         if (PVector.dist(monster_steeringClass.getPosition(), character.getPosition())<30)
         {
-            try
-            {
-                if (dataCount<dataCountThresh) {
-                    recordData(character, monster_steeringClass, monster_customShape, "reset");
-                    println("Recorded data " + dataCount++);
-                }
-                else if (dataCount==dataCountThresh)
-                {
-                    pw.close();
-                    print("File closed");
-                }
-            }
-            catch (Exception ex)
-            {
-                println("Cannot record data");
-            }
-
             characterPath = new ArrayList<PVector>();
             lastIndex = 0;
             character.setPosition(new PVector(width-100, height-100));
@@ -496,7 +352,7 @@ public class DriverClassDT_BT_RecordData extends PApplet {
 
     public static void main(String[] args)
     {
-        PApplet.main("DriverClassDT_BT_RecordData");
+        PApplet.main("DriverClassLearnedTree");
     }
 
 

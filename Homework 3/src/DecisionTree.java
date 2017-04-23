@@ -2,6 +2,7 @@ import processing.core.PApplet;
 import processing.core.PVector;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by anubhabmajumdar on 4/4/17.
@@ -45,8 +46,6 @@ public class DecisionTree  {
         R1_y = 50;
 
         path = new ArrayList<PVector>();
-
-
     }
 
     public NodeInterface makeTree()
@@ -78,35 +77,34 @@ public class DecisionTree  {
         return root;
     }
 
-    public NodeInterface makeTree2()
+    public NodeInterface makeLearnedTree()
     {
-        // get leaves
-        NodeInterface evade = new EvadeLeaf(new InternalNode(), null, null);
+        /* DTLearning output on features2.csv
+        Parent Node-->N/A	Parent Value-->N/A	Current Node-->In Room	Left-->false	Right-->true
+        Parent Node-->In Room	Parent Value-->false	Current Node-->Distance Between Objects	Left-->far	Right-->close
+        Parent Node-->Distance Between Objects	Parent Value-->far	Current Node-->Leaf	ChangeMonster	Probability=0.00684403752889453	PathFollow	Probability=0.9886914744141776	Rotation	Probability=0.004464488056927889
+        Parent Node-->Distance Between Objects	Parent Value-->close	Current Node-->Leaf	reset
+        Parent Node-->In Room	Parent Value-->true	Current Node-->Distance Between Objects	Left-->far	Right-->close
+        Parent Node-->Distance Between Objects	Parent Value-->far	Current Node-->Leaf	ChangeMonster	Probability=0.44172094617757973	PathFollow	Probability=0.07319163524168666	Rotation	Probability=0.4850874185807336
+        Parent Node-->Distance Between Objects	Parent Value-->close	Current Node-->Leaf	reset
+        */
 
-        NodeInterface pathFollowingCenter = new PathFollowingLeaf(new InternalNode(), null, null);
-        ((PathFollowingLeaf)pathFollowingCenter).setX(S1_x);
-        ((PathFollowingLeaf)pathFollowingCenter).setY(S1_y);
+        NodeInterface randomPathFollowingLeaf = new SupermanFollowingLeaf(new InternalNode(), null, null);
+        NodeInterface doResetLeaf = new doReset(new InternalNode(), null, null);
+        NodeInterface highSpeedRot = new highSpeedRotLeaf(new InternalNode(), null, null);
+        NodeInterface changeMonster = new ChangeMonster(new InternalNode(), null, null);
 
-        NodeInterface pathFindCenter = new PathFollowingLeaf(new InternalNode(), null, null);
-        ((PathFollowingLeaf)pathFindCenter).setX(S1_x);
-        ((PathFollowingLeaf)pathFindCenter).setY(S1_y);
+        NodeInterface randomDecision = new chooseBetweenRotAndChangeMonster(new InternalNode(), highSpeedRot, changeMonster);
+        ((chooseBetweenRotAndChangeMonster)randomDecision).setSplitPercentage(0.44172094617757973);
 
-        NodeInterface pathFindRoom = new PathFollowingLeaf(new InternalNode(), null, null);
-        ((PathFollowingLeaf)pathFindRoom).setX(R1_x);
-        ((PathFollowingLeaf)pathFindRoom).setY(R1_y);
+        NodeInterface distRight = new VicinityCheck(new InternalNode(), randomDecision, doResetLeaf);
 
-        NodeInterface stopAndRotate = new highSpeedRotLeaf(new InternalNode(), null, null);
+        NodeInterface distLeft = new VicinityCheck(new InternalNode(), randomPathFollowingLeaf, doResetLeaf);
 
-        NodeInterface randomPathFollowing = new RandomPathFollowingLeaf(new InternalNode(), null, null);
-
-
-        // get internal nodes
-        NodeInterface maxRotationCheck = new MaxRotationCheckNode(new InternalNode(), pathFindCenter, stopAndRotate);
-        NodeInterface vicinityCheck = new VicinityCheck(new InternalNode(), evade, randomPathFollowing);
-        NodeInterface outsideRoomCheck = new OutsideRoomCheck(new InternalNode(), pathFindRoom, vicinityCheck);
-        NodeInterface root = new InsideRoomCheck(new InternalNode(), maxRotationCheck, outsideRoomCheck);
+        NodeInterface root = new SupermanInsideRoomCheck(new InternalNode(), distRight, distLeft);
 
         return root;
+
     }
 
     public ArrayList<PVector> traverseDT(NodeInterface root, SteeringClass steeringClass)
@@ -245,6 +243,205 @@ public class DecisionTree  {
         }
     }
 
+    public class SupermanInsideRoomCheck extends InternalNodeInterface
+    {
+        public SupermanInsideRoomCheck(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            float x = monster.getPosition().x;
+            float y = monster.getPosition().y;
+
+            int room_width = 190;
+            int room_height = 190;
+
+
+            if ((x<room_width) && (y<room_height))
+                return true;
+            else
+                return false;
+        }
+    }
+
+    public class doReset extends InternalNodeInterface
+    {
+        public doReset(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            pApplet.println("In doReset\n");
+
+            path = new ArrayList<PVector>();
+            steeringClass.setPosition(new PVector(pApplet.width-100, pApplet.height-100));
+            steeringClass.setOrientation(0);
+            return true;
+        }
+    }
+
+    public class chooseBetweenRotAndChangeMonster extends InternalNodeInterface {
+        double splitPercentage;
+        public chooseBetweenRotAndChangeMonster(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        public void setSplitPercentage(double splitPercentage) {
+            this.splitPercentage = splitPercentage;
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+            return (Math.random()>splitPercentage);
+        }
+    }
+
+    public class highSpeedRotLeaf extends InternalNodeInterface
+    {
+        public highSpeedRotLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+            pApplet.println("In rotation\n");
+
+            //action = "Rotation";
+
+            try
+            {
+                steeringClass.setVelocity(new PVector(0,0));
+                steeringClass.setAcceleration(new PVector(0,0));
+                steeringClass.setAngularAcc(0.001f);
+                //steeringClass.getAcceleration()
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+    }
+
+    public class ChangeMonster extends InternalNodeInterface
+    {
+        public ChangeMonster(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+
+            pApplet.println("In ChnageMonster\n");
+
+            //action = "ChangeMonster";
+
+            if (customShape.getImageName().equals("cuteMonster_red.jpeg"))
+                customShape.setImageName("cuteMonster_blue.jpeg");
+            else
+                customShape.setImageName("cuteMonster_red.jpeg");
+            customShape.reloadPImage();
+            return true;
+        }
+    }
+
+    public class SupermanFollowingLeaf extends InternalNodeInterface {
+
+        int X, Y;
+
+        public SupermanFollowingLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
+            super(nodeInterface, left, right);
+            //pApplet.registerMethod("Draw", this);
+        }
+
+        public void setX(int x) {
+            X = x;
+        }
+
+        public void setY(int y) {
+            Y = y;
+        }
+
+        @Override
+        public boolean evaluate(SteeringClass steeringClass) {
+            pApplet.println("In SupermanFollowingLeaf\n");
+
+            //action = "PathFollow";
+
+            X = (int) monster.getPosition().x;
+            Y = (int) monster.getPosition().y;
+
+            path = pathFindingAlgo(X, Y, steeringClass);
+
+            return true;
+        }
+
+        public ArrayList<PVector> pathFindingAlgo(int mouseX, int mouseY, SteeringClass character)
+        {
+            ArrayList<Edge> edges;
+            ArrayList<PVector> path;
+
+            edges = new ArrayList<Edge>();
+            path = new ArrayList<PVector>();
+
+            PathFinding pathFinding = new PathFinding(pApplet);
+
+            Tile target = new Tile(mouseX, mouseY, tileSize, pApplet);
+            Tile charPos = new Tile((int) character.getPosition().x, (int) character.getPosition().y, tileSize, pApplet);
+
+            //println(charPos.tileNumber + "\t" + target.tileNumber);
+
+
+//            edges = pathFinding.dijkstra(roomGraph, charPos.tileNumber, target.tileNumber);
+            edges = pathFinding.aStar(roomGraph, charPos.tileNumber, target.tileNumber, "distanceHeuristic");
+            if (edges!=null) {
+                for (int i = 0; i < edges.size(); i++)
+                    path.add(getPosFromTile(getTileFromTileNum(edges.get(i).toNode), tileSize));
+            }
+            else
+            {
+                //pApplet.println("No Path");
+                edges = new ArrayList<Edge>();
+            }
+            return path;
+        }
+
+
+        public Tile getTileFromTileNum(int tileNum)
+        {
+            int i;
+            for (i=0;i<allTiles.size();i++)
+            {
+                if (allTiles.get(i).tileNumber==tileNum)
+                    break;
+
+            }
+            return allTiles.get(i);
+        }
+
+        public PVector getPosFromTile(Tile tile, int tileSize)
+        {
+            float x = (tile.tileX*tileSize) + 0.5f * tileSize;
+            float y = (tile.tileY*tileSize) + 0.5f * tileSize;
+
+            return new PVector(x, y);
+
+
+        }
+
+        public void drawPath(ArrayList<PVector> path)
+        {
+            for (int i=0;i<path.size()-1;i++)
+            {
+                pApplet.line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
+            }
+        }
+    }
+
     public class NearWallCheckNode extends InternalNodeInterface
     {
         int thresh;
@@ -279,8 +476,10 @@ public class DecisionTree  {
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
 
+            pApplet.println("In VicinityCheck\n");
+
             float dist = PVector.dist(steeringClass.getPosition(), monster.getPosition());
-            return (dist<100);
+            return (dist>30);
         }
     }
 
@@ -322,7 +521,7 @@ public class DecisionTree  {
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In SupermanFollowingLeaf\n");
+            //pApplet.println("In SupermanFollowingLeaf\n");
             path = pathFindingAlgo(X, Y, steeringClass);
 
             return true;
@@ -401,7 +600,7 @@ public class DecisionTree  {
 
         @Override
         public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In RandomPathFollowingLeaf\n");
+            //pApplet.println("In RandomPathFollowingLeaf\n");
 
             int thresh = 20;
             X = (int) pApplet.random(thresh, pApplet.width-thresh);
@@ -567,34 +766,7 @@ public class DecisionTree  {
     }
 
 
-
-
-    public class highSpeedRotLeaf extends InternalNodeInterface
-    {
-        public highSpeedRotLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
-            super(nodeInterface, left, right);
-        }
-
-        @Override
-        public boolean evaluate(SteeringClass steeringClass) {
-            pApplet.println("In rotation\n");
-
-            try
-            {
-                steeringClass.setVelocity(new PVector(0,0));
-                steeringClass.setAcceleration(new PVector(0,0));
-                steeringClass.setAngularAcc(0.001f);
-                //steeringClass.getAcceleration()
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-    }
-
-    public class ChangeCharacterLeaf extends InternalNodeInterface
+public class ChangeCharacterLeaf extends InternalNodeInterface
     {
         public ChangeCharacterLeaf(NodeInterface nodeInterface, NodeInterface left, NodeInterface right) {
             super(nodeInterface, left, right);

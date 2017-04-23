@@ -489,7 +489,7 @@ public class DTLearning {
 
     public static void main(String args[]) throws IOException
     {
-        new DTLearning().getFeatures("trainData2.csv");
+        //new DTLearning().getFeatures("trainData2.csv");
         new DTLearning().makeDTFromFeatures("features2.csv");
     }
 
