@@ -17,6 +17,10 @@ Video - https://youtu.be/plYTG3KJh9w
 Run DriverClassLearnedTree.java to see the learned decision tree in action. The decision tree used is coded in makeLearnedTree() method in DecisionTree.java.
 Video - https://youtu.be/YxytHHU-fl8
 
+4. Writeup
+
+The writeup file is named hw3_amajumd.pdf.
+
 Environment is designed by me. Character images are taken from internet. 
 References:
 ---------------------------------------
