@@ -1,20 +1,27 @@
-# CSC 584 : Homework 2
+# CSC 584 : Homework 3
 
-Use eclipse or Intellij to run the programs. Processing library and ControlP5 library has been added to the folders.
+Use eclipse or Intellij to run the programs. Processing library has been added to the folder.
 
-1. First Steps
+1. Decision Tree
 
-The smaller hand-crafted graph is stored in world_graph2.txt.
-The larger graph is stored in cit-HepPh.txt. This graph is freely available to use from http://snap.stanford.edu/data/cit-HepPh.html. All the references has been cited in the writeup. It is not refered in the file itself as the file needs to be structured in a particular way to be parsed correctly by the program.
+Run DriverClassDT.java to see the Decision tree in action. The decision tree used is coded in makeTree() method in DecisionTree.java.
+Video - https://youtu.be/l7y9ZwMPyEI
 
-2. PathFinding algorithms
+2. Behavior Tree
 
-To test the pathfinding algorithms, please run DriverClass.java. It provides a simple GUI to test and compare both Dijkstra's and A* algorithm on both the graphs and two different heuristic for A* algorithm.
-I have used the freely available processing library called "controlP5", developed by Andreas Schlegel, 2015, for the GUI - http://www.sojamo.de/libraries/controlP5/#about. The library and its documentation is referenced to the best of my knowledge in the source code. Here are the references- http://www.sojamo.de/libraries/controlP5/#about, http://www.sojamo.de/libraries/controlP5/#examples and http://www.kasperkamperman.com/blog/processing-code/controlp5-library-example1/. 
+Run DriverClassDT_BT.java to see the Behavior tree in action. The Behavior tree used is coded in makeTree() method in BehaviourTree.java.
+Video - https://youtu.be/plYTG3KJh9w
 
-3. Pathfinding and pathfollowing in indoor environment
+3. Learned Decision Tree
 
-To test the indoor environment pathfollowing, please run IndoorPathfinding.java. Click anywhere in the white pixel region to have the character travel there.
+Run DriverClassLearnedTree.java to see the learned decision tree in action. The decision tree used is coded in makeLearnedTree() method in DecisionTree.java.
+Video - https://youtu.be/YxytHHU-fl8
 
-Please check the Indoor pathfollowing in action here - https://www.youtube.com/watch?v=0nXZMcw15nM&feature=youtu.be
+Environment is designed by me. Character images are taken from internet. 
+References:
+---------------------------------------
+[1] “Lego superman.” Accessed on : 04/17/2017; https://lc-www-live-s. legocdn.com/r/www/r/catalogs/-/media/catalogs/characters/dc/ fullsize/2014/76040-superman_360w_2x.png?l.r2=-2079447138.
 
+[2] “Red monster.” Accessed on : 04/17/2017; http://fsb.zedge.net/scale. php?img=MS83LzIvNS8xLTEwMTM5MDgwLTE3MjUxMzMuanBn&ctype=1&v=4& q=71&xs=300&ys=266&sig=f646cac1f807dad3d23cb9133120724f950c0178.
+
+[3] “Blue monster.” Accessed on : 04/17/2017; https://s-media-cache-ak0. pinimg.com/736x/b2/53/36/b25336fe10b2e2fbb709889f9b3e74c1.jpg.
