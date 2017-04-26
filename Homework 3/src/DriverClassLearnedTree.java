@@ -36,6 +36,7 @@ public class DriverClassLearnedTree extends PApplet {
     int dataCount, dataCountThresh;
     BTReturnObject btReturnObject;
     String action;
+    int resetCount = 0, drawCount=0;
 
     public void settings()
     {
@@ -147,7 +148,9 @@ public class DriverClassLearnedTree extends PApplet {
         character.update(1);
         monster_steeringClass.update(1);
 
-
+        drawCount++;
+        if (drawCount%1000 == 0)
+            println("Draw Count = "+drawCount+"\t Reset Count = "+resetCount);
         //drawPath(monsterPath);
         //drawPath(characterPath);
 
@@ -172,6 +175,7 @@ public class DriverClassLearnedTree extends PApplet {
             lastIndexMonster = 0;
             monster_steeringClass.setPosition(new PVector(100, height-100));
             monster_steeringClass.setOrientation(0);
+            resetCount++;
             return true;
         }
         return false;

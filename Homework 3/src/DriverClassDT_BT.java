@@ -32,6 +32,7 @@ public class DriverClassDT_BT extends PApplet {
     BehaviourTree behaviourTree;
     NodeInterface btRoot;
     ArrayList<PVector> monsterPath;
+    int resetCount = 0, drawCount=0;
 
     public void settings()
     {
@@ -139,6 +140,10 @@ public class DriverClassDT_BT extends PApplet {
         //drawPath(monsterPath);
         //drawPath(characterPath);
 
+        drawCount++;
+        if (drawCount%1000 == 0)
+            println("Draw Count = "+drawCount+"\t Reset Count = "+resetCount);
+
     }
 
     public void handleBoundary(SteeringClass steeringClass)
@@ -159,7 +164,7 @@ public class DriverClassDT_BT extends PApplet {
             lastIndexMonster = 0;
             monster_steeringClass.setPosition(new PVector(100, height-100));
             monster_steeringClass.setOrientation(0);
-
+            resetCount++;
         }
     }
 

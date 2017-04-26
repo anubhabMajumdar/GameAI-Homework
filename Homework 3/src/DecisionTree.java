@@ -6,6 +6,8 @@ import java.util.Random;
 
 /**
  * Created by anubhabmajumdar on 4/4/17.
+ * Followed the Banas design pattern tutorial - https://www.youtube.com/watch?v=j40kRwSm4VE
+ * Learned decorator pattern in CSC 517 and in CSC 584
  */
 public class DecisionTree  {
 
