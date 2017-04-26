@@ -20,8 +20,8 @@ Video - https://youtu.be/YxytHHU-fl8
 Environment is designed by me. Character images are taken from internet. 
 References:
 ---------------------------------------
-[1] “Lego superman.” Accessed on : 04/17/2017; https://lc-www-live-s. legocdn.com/r/www/r/catalogs/-/media/catalogs/characters/dc/ fullsize/2014/76040-superman_360w_2x.png?l.r2=-2079447138.
+[1] “Lego superman.” Accessed on : 04/17/2017; https://lc-www-live-s.legocdn.com/r/www/r/catalogs/-/media/catalogs/characters/dc/fullsize/2014/76040-superman_360w_2x.png?l.r2=-2079447138.
 
-[2] “Red monster.” Accessed on : 04/17/2017; http://fsb.zedge.net/scale. php?img=MS83LzIvNS8xLTEwMTM5MDgwLTE3MjUxMzMuanBn&ctype=1&v=4& q=71&xs=300&ys=266&sig=f646cac1f807dad3d23cb9133120724f950c0178.
+[2] “Red monster.” Accessed on : 04/17/2017; http://fsb.zedge.net/scale.php?img=MS83LzIvNS8xLTEwMTM5MDgwLTE3MjUxMzMuanBn&ctype=1&v=4&q=71&xs=300&ys=266&sig=f646cac1f807dad3d23cb9133120724f950c0178.
 
-[3] “Blue monster.” Accessed on : 04/17/2017; https://s-media-cache-ak0. pinimg.com/736x/b2/53/36/b25336fe10b2e2fbb709889f9b3e74c1.jpg.
+[3] “Blue monster.” Accessed on : 04/17/2017; https://s-media-cache-ak0.pinimg.com/736x/b2/53/36/b25336fe10b2e2fbb709889f9b3e74c1.jpg.
