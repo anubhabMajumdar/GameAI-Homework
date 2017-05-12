@@ -10,5 +10,6 @@
     <orderEntry type="library" name="library" level="project" />
     <orderEntry type="library" name="reference" level="project" />
     <orderEntry type="library" name="MidiMapper" level="project" />
+    <orderEntry type="library" name="src" level="project" />
   </component>
 </module>
